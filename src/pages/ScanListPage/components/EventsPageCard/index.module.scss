@@ -1,0 +1,54 @@
+@import '../../../../shared/mixins.scss';
+
+.eventsPageWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    height: 90vh;
+    background-color: $background;
+
+    .title {
+        color: $text-primary;
+    }
+}
+
+.filtersWrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.filterItem {
+    color: $text-primary;
+}
+
+.eventsList {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.eventCard {
+    background-color: white;
+    padding: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    word-wrap: break-word;
+}
+
+.settingsNested {
+    margin-left: 16px;
+}
+
+.setting {
+    background-color: white;
+    padding: 4px;
+    margin-bottom: 4px;
+    border: 1px solid #ccc;
+    color: $secondary;
+}
+
+

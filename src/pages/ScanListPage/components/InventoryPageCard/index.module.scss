@@ -1,0 +1,28 @@
+@import '../../../../shared/mixins.scss';
+
+.settingsPageWrapper {
+    display: flex;
+    align-items: baseline;
+    justify-content: baseline;
+    flex-direction: column;
+    gap: 32px;
+    width: 100%;
+}
+.settingsPageStatusWrapper {
+    display: flex;
+    align-items: baseline;
+    justify-content: baseline;
+    flex-direction: row;
+    gap: 32px;
+    @include roboto-medium;
+    color: $primary;
+    z-index: 2;
+}
+
+.settingPageForm {
+    background-color: $primary;
+    border: 2px solid $primary-hover;
+    width: 90%;
+    padding: 8px 24px;
+    height: auto;
+}

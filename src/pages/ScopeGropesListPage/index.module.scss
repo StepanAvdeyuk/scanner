@@ -1,0 +1,36 @@
+@import '../../shared/mixins.scss';
+
+.scopeGropesListPageWrapper {
+    background-color: $background;
+    width: auto;
+    height: 100vh;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 32px;
+    flex-direction: row;
+    padding: 32px;
+    overflow-y: hidden;
+    overflow-x: hidden;
+
+    .scopeGropesListTitle {
+        @include roboto-bold;
+        color: $primary;
+    }
+
+    .scopeButtonsWrapper {
+        margin: 32px;
+    }
+}
+
+.prevScopeBlock {
+    display: flex;
+    flex-wrap: wrap; 
+    align-items: baseline;
+    justify-content: flex-start;
+    flex-direction: row;
+    gap: 32px;
+    width: 100%;
+    box-sizing: border-box;
+}
+

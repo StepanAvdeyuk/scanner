@@ -1,0 +1,30 @@
+@import '../../shared/mixins.scss';
+
+.loginPageWrapper {
+    background-color: $background;
+    width: auto;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+
+    h1 {
+        @include roboto-bold;
+    }
+
+    span {
+        @include roboto-medium;
+    }
+}
+
+.loginPageWrapperInput {
+    width: 300px;
+    height: 100px;
+    display: flex;
+    margin: 8px;
+    align-items: baseline;
+    justify-content: center;
+    border-radius: 24px;
+    background-color: $primary;
+}

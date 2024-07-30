@@ -1,0 +1,23 @@
+.filter-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    label {
+        display: flex;
+        
+        .label-name, input {
+            flex: 1;
+        }
+    }
+
+    .form-buttons {
+        display: flex;
+        gap: 15px;
+        flex: 1;
+
+        .button {
+            flex: 1;
+        }
+    }
+}

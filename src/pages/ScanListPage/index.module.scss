@@ -1,0 +1,35 @@
+@import '../../shared/mixins.scss';
+
+.scanListPageWrapper {
+    background-color:$background;
+    width: auto;
+    height: auto;
+    min-height: 100vh;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 32px;
+    flex-direction: row;
+    padding: 32px;
+
+    .scanListTitle {
+        @include roboto-bold;
+        color: $primary;
+    }
+
+    .scanButtonsWrapper {
+        margin: 32px;
+    }
+}
+
+.prevScanBlock {
+    display: flex;
+    flex-wrap: wrap; 
+    align-items: baseline;
+    justify-content: flex-start;
+    flex-direction: row;
+    gap: 32px;
+    width: 100%;
+    box-sizing: border-box;
+}
+

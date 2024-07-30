@@ -1,0 +1,91 @@
+@import '../../shared/mixins.scss';
+
+.scanAddPageWrapper {
+    background-color: $background;
+    width: auto;
+    height: auto;
+    min-height: 100vh;
+    display: flex;
+    align-items: baseline;
+    justify-content: baseline;
+    gap: 32px;
+    flex-direction: column;
+    padding: 32px;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    color: $primary;
+}
+
+.scanAddPageForm {
+    position: relative;
+    box-sizing: border-box;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    flex-direction: column;
+    padding: 32px;
+    width: 90%;
+    height: auto;
+    border: 1px solid $primary;
+    z-index: 1;
+    border-radius: 24px;
+    gap: 16px;
+    margin: 8px;
+
+    span {
+        @include roboto-medium;
+        color: $primary;
+        cursor: pointer;
+    }
+
+    span:hover {
+        color: $primary-hover;
+    }
+
+    .saveButton {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+    }
+}
+
+.modalContent {
+    display: flex;
+    align-items: baseline;
+    justify-content: baseline;
+    flex-direction: column;
+    height: auto;
+    color: $secondary;
+
+    form {
+        padding: 8px;
+    }
+
+    input {
+        margin: 8px;
+    }
+}
+
+.inputWrapper {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 4px;
+    margin: 8px;
+}
+
+.modalError {
+    color: red;
+    @include roboto-light;
+}
+
+.dropdownSelectedBlock {
+    background-color: white;
+    width: auto;
+    height: auto;
+    color: $secondary;
+    padding: 4px;
+    min-height: 8px;
+    min-width: 32px;
+}

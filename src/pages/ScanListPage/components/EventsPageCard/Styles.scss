@@ -1,0 +1,11 @@
+// TODO merge with index.module.scss.d.ts
+
+.events-container {
+    display: flex;
+    gap: 2rem;
+
+    .events-table, .event-details {
+        flex: 1;
+        width: 100%;
+    }
+}

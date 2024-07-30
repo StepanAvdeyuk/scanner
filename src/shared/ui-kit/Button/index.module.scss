@@ -1,0 +1,71 @@
+@import '../../mixins.scss';
+
+.button {
+    padding: 2px 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    cursor: pointer;
+  
+    &.icon {
+      width: 24px;
+      height: 24px;
+      @include roboto-regular;
+      text-align: center;
+    }
+  
+    &.medium {
+      width: 96px;
+      height: 48px;
+      @include roboto-light;
+      text-align: center;
+    }
+  
+    &.large {
+        width: 320px;
+        height: 48px;
+        color: $primary;
+    }
+
+    &.small {
+      width: 48px;
+      padding: 8px 16px;
+      height: auto;
+      @include roboto-thin;
+    }
+  
+    &.rounded {
+        border-radius: 24px;
+    }
+
+    &.primary {
+      background-color: $primary;
+      color: $secondary
+    }
+
+    &.primary:hover {
+      background-color: $primary-hover;
+    }
+
+    &.secondary {
+      background-color: $background;
+      color: $primary;
+    }
+
+    &.default {
+      background-color: $white-50;
+      color: $secondary;
+    }
+
+    &.default:hover {
+      background-color: $primary-hover;
+    }
+
+    &.small:hover {
+      background-color: $secondary-hover;
+    }
+  }
+  

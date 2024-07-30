@@ -1,0 +1,40 @@
+@import '../../mixins.scss';
+
+.cardContainer {
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: $main-gradient;
+  overflow: hidden;
+  transition: transform 0.3s ease-in-out;
+
+  &.small {
+    width: 100px;
+    height: 60px;
+    gap: 16px;
+  }
+
+  &.medium {
+    width: 600px;
+    height: 400px;
+  }
+
+  &.large {
+    width: 600px;
+    height: 400px;
+  }
+
+  &.rounded {
+    border-radius: 15px;
+  }
+
+  &.expanded:hover {
+    transform: scale(1.1);
+  }
+
+  h2 {
+    margin-bottom: 20px;
+  }
+}

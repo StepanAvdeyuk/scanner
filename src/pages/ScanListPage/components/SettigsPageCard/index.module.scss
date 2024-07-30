@@ -1,0 +1,45 @@
+@import '../../../../shared/mixins.scss';
+
+.settingsPageWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    padding: 16px;
+    height: 90vh;
+    background-color: $background;
+    overflow-y: auto;
+
+    .title {
+        color: $primary;
+    }
+}
+
+.settingsPageStatusWrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    color: $primary;
+    align-items: center;
+}
+
+.setting {
+    background-color: white;
+    padding: 16px;
+    margin-bottom: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: $secondary;
+    word-wrap: break-word;
+}
+
+.settingsNested {
+    margin-left: 16px;
+}
+
+.settingsContentWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}

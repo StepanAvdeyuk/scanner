@@ -1,0 +1,41 @@
+@import '../../mixins.scss';
+
+.progressBarContainer {
+    width: 80%;
+    height: 20px;
+    background-color: $primary-hover;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    margin: 10px 0;
+  }
+  
+  .progressBar {
+    height: 100%;
+    background: $main-gradient;
+    border-radius: 10px;
+    transition: width 0.3s ease-in-out;
+  }
+  
+  .enter {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  
+  .enterActive {
+    opacity: 1;
+    transform: scaleX(1);
+    transition: opacity 300ms, transform 300ms;
+  }
+  
+  .exit {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  
+  .exitActive {
+    opacity: 0;
+    transform: scaleX(0);
+    transition: opacity 300ms, transform 300ms;
+  }
+  
