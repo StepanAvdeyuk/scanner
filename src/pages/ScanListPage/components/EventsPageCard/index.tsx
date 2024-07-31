@@ -1,5 +1,6 @@
-import { Button, Input, Select, Table } from 'antd';
+import { Button, Input, Select, Table, Card, List, Typography } from 'antd';
 import { FC, useEffect, useState } from 'react';
+import { CloseOutlined } from '@ant-design/icons';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import css from './index.module.scss';
@@ -52,6 +53,7 @@ interface EventsData {
 }
 
 const EventsPageCard: FC = () => {
+    const { Text } = Typography;
     const { reportId } = useParams();
 
     const [eventsData, setEventsData] = useState<EventsData | undefined>();
@@ -115,28 +117,42 @@ const EventsPageCard: FC = () => {
         fetchEvents({});
     }, [reportId]);
 
-    const renderEventDetails = (details: any) => {
-        if (details === undefined) return;
-        
+    const renderEventDetails: any = (details: any, level = 0) => {
+        if (!details || (typeof details === 'object' && Object.keys(details).length === 0)) {
+            return null;
+        }
+    
         return Object.entries(details).map(([key, value]) => {
+            if (key === 'info') {
+                return renderEventDetails(value, level);
+            }
+    
             if (typeof value === 'object' && value !== null) {
-                return (
-                    <div key={key}>
-                        <strong>{key}:</strong>
-                        <div className={css.settingsNested}>
-                            {renderEventDetails(value)}
+                if (Array.isArray(value)) {
+                    return (
+                        <List.Item key={key} style={{ paddingLeft: level * 20, paddingTop: 8, paddingBottom: 8 }}>
+                            <Text strong>{key}:</Text> {value.join(', ')}
+                        </List.Item>
+                    );
+                } else {
+                    const nestedDetails = renderEventDetails(value, level + 1);
+                    return nestedDetails ? (
+                        <div key={key} style={{ marginBottom: 16, marginLeft: level * 20 }}>
+                            <Text strong>{key}:</Text>
+                            {nestedDetails}
                         </div>
-                    </div>
-                );
+                    ) : null;
+                }
             } else {
                 return (
-                    <div key={key} className={css.setting}>
-                        <strong>{key}:</strong> {value !== null ? value?.toString() : 'null'}
-                    </div>
+                    <List.Item key={key} style={{ paddingLeft: level * 20, paddingTop: 8, paddingBottom: 8 }}>
+                        <Text strong>{key}:</Text> {value !== null ? value?.toString() : 'null'}
+                    </List.Item>
                 );
             }
         });
     };
+    
 
     const setDetailedEventById = (id: number) => {
         const event = eventsData?.events.find(event => event.id === id);
@@ -159,7 +175,7 @@ const EventsPageCard: FC = () => {
 
     const acceptRiskClick = (id: number) => {
         const event = eventsData?.events.find(event => event.id === id);
-        const userConfirmed = confirm(`Принять риск для ${event?.info.name}?`);
+        const userConfirmed = confirm(`Принять риск для ${id}?`);
         if (userConfirmed) {
             acceptRisk(id);
         } else {
@@ -275,11 +291,27 @@ const EventsPageCard: FC = () => {
                                 />
                             </div>
                             { detailedEvent &&
-                                <div className='event-details'>
-                                    <div className={css.eventsList}>
-                                        { renderEventDetails(detailedEvent) }
+                                <Card
+                                title={
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <span>Описание уязвимости</span>
+                                        <Button
+                                            type="text"
+                                            icon={<CloseOutlined />}
+                                            onClick={() => setDetailedEvent(undefined)}
+                                            style={{ fontSize: '16px' }}
+                                        />
                                     </div>
-                                </div>
+                                }
+                                style={{ width: '50%' }}
+                                >
+                                    <List
+                                        bordered
+                                        dataSource={renderEventDetails(detailedEvent)}
+                                        renderItem={item => item}
+                                        style={{ padding: '0 16px' }}
+                                    />
+                                </Card>
                             }
                         </div>
                     </div>
