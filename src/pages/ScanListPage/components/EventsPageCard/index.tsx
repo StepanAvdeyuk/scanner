@@ -1,12 +1,15 @@
 import { Button, Input, Select, Table } from 'antd';
 import { FC, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import axios from 'axios';
 import css from './index.module.scss';
 import { getReportEvents } from '../../../../API/api';
+import { API_TOKEN, BASE_URL } from '../../../../API/consts';
 
 import "./components/EventChart";
 import "./Styles.scss";
 import EventChart from './components/EventChart';
+import img from '../../../../shared/icons/arrow_down/down-arrow.svg';
 
 const { Option } = Select;
 
@@ -140,6 +143,29 @@ const EventsPageCard: FC = () => {
         setDetailedEvent(event);
     }
 
+    const acceptRisk = async (id: number) => {
+        try {
+            const response = await axios.post(`${BASE_URL}/accepted_risk`, [id], {
+                headers: {
+                    'Authorization': `Token ${API_TOKEN}`,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
+        } catch (error) {
+            console.error('Ошибка принятия риска:', error);
+        }
+    };
+
+    const acceptRiskClick = (id: number) => {
+        const event = eventsData?.events.find(event => event.id === id);
+        const userConfirmed = confirm(`Принять риск для ${event?.info.name}?`);
+        if (userConfirmed) {
+            acceptRisk(id);
+        } else {
+        }
+    }
+
     const columns = [
         {
             title: 'Уязвимость',
@@ -151,6 +177,14 @@ const EventsPageCard: FC = () => {
             dataIndex: 'severity',
             key: 'severity',
         },
+        {
+            title: 'Принять риск',
+            dataIndex: 'accept_risk',
+            key: 'accept_risk',
+            render: (_: any, record: any) => (
+                <Button danger size='small' shape="circle" onClick={(e) => {e.stopPropagation();acceptRiskClick(record.id)}}>✓</Button>
+            ),
+        }
     ];
 
     const tableDataSource = eventsData?.events.map(event => {
@@ -158,7 +192,7 @@ const EventsPageCard: FC = () => {
             key: event.id,
             id: event.id,
             name: event.info.name,
-            severity: event.info.severity
+            severity: event.info.severity,
         };
     });
 
