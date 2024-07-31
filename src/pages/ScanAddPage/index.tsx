@@ -31,8 +31,29 @@ const ScanAddPage: FC = () => {
 
     const navigate = useNavigate()
 
+    const cleanSettingsData = (obj: any): any => {
+        if (obj === null || obj === undefined) return obj;
+        if (Array.isArray(obj)) {
+            return obj
+                .map(cleanSettingsData) 
+                .filter(item => item !== null && item !== undefined && item !== '' && item !== 0);
+        }
+        if (typeof obj === 'object') {
+            return Object.keys(obj)
+                .reduce((acc: any, key: string) => {
+                    const value = cleanSettingsData(obj[key]);
+                    if (value !== null && value !== undefined && value !== '' && value !== 0) {
+                        acc[key] = value;
+                    }
+                    return acc;
+                }, {});
+        }
+        return obj;
+    };
+    
+
     const [settingsData, setSettingsData] = useState<any>({
-        scan: '',
+        scan: 'test',
         scope_groups: [''],
         nmap_settings: {
             min_rate: 0,
@@ -43,12 +64,13 @@ const ScanAddPage: FC = () => {
         },
         nuclei_settings: {
             concurrency: {
-                template_concurrency: 0,
-                host_concurrency: 0,
-                headless_host_concurrency: 0,
-                headless_template_concurrency: 0,
-                javascript_template_concurrency: 0,
-                template_payload_concurrency: 0
+                // template_concurrency: 0,
+                // host_concurrency: 0,
+                // headless_host_concurrency: 0,
+                // headless_template_concurrency: 0,
+                // javascript_template_concurrency: 0,
+                // template_payload_concurrency: 0,
+                rate_limit_per_host: 0,
             },
             interactsh_options: {
                 server_url: '',
@@ -73,28 +95,28 @@ const ScanAddPage: FC = () => {
                 exclude_severities: '',
                 protocol_types: '',
                 exclude_protocol_types: '',
-                authors: [''],
-                tags: [''],
-                exclude_tags: [''],
-                include_tags: [''],
-                ids: [''],
-                exclude_ids: [''],
-                template_condition: ['']
+                authors: ['test'],
+                tags: ['test'],
+                exclude_tags: ['test'],
+                include_tags: ['test'],
+                ids: ['test'],
+                exclude_ids: ['test'],
+                template_condition: ['test']
             },
             template_sources: {
-                templates: ['']
+                templates: ['test']
             },
-            headers: [''],
+            headers: ['test'],
             follow_redirects: false,
             follow_host_redirects: false,
             max_redirects: 0,
             disable_redirects: false,
-            internal_resolvers_list: [''],
+            internal_resolvers_list: ['test'],
             force_attempt_http2: false,
             dialer_timeout: '',
             dialer_keep_alive: '',
-            global_rate_limit_max_tokens: 0,
-            global_rate_limit_duration: ''
+            // global_rate_limit_max_tokens: 0,
+            // global_rate_limit_duration: ''
         }
     });
 
@@ -136,9 +158,9 @@ const ScanAddPage: FC = () => {
         }
     };
 
-    const createScan = async () => {
+    const createScan = async (name: string) => {
         try {
-            const response = await axios.post('http://109.172.115.106:8000/api/v1/scan/create/', {}, {
+            const response = await axios.post('http://109.172.115.106:8000/api/v1/scan/create/', {name}, {
                 headers: {
                     'Authorization': `Token ${API_TOKEN}`,
                     'Accept': 'application/json',
@@ -155,8 +177,8 @@ const ScanAddPage: FC = () => {
     };
 
     const handleAddScanClick = async () => {
-        await createScan();
-        await fetchSettingsData();
+        // await createScan();
+        // await fetchSettingsData();
         setIsMainBlockVisible(true);
     };
 
@@ -261,7 +283,7 @@ const ScanAddPage: FC = () => {
     };
 
     const handleSaveAll = () => {
-        axios.post('http://109.172.115.106:8000/api/v1/settings/', settingsData, {
+        axios.post('http://109.172.115.106:8000/api/v1/settings/', cleanSettingsData(settingsData), {
             headers: {
                 'Authorization': `Token ${API_TOKEN}`,
                 'Accept': 'application/json',
@@ -289,7 +311,7 @@ const ScanAddPage: FC = () => {
 
     const handleSaveAllButton = () =>{
         handleSaveAll()
-        createScan()
+        createScan(settingsData.scan);
     }
 
     const scopeGroupMenu = (
@@ -304,10 +326,16 @@ const ScanAddPage: FC = () => {
     );
 
     const handleSelectGroup = (group: string) => {
-        setSettingsData(prevState => ({
-            ...prevState,
-            scope_groups: [...prevState.scope_groups, group]
-        }));
+        setSettingsData(prevState => {
+            const isGroupPresent = prevState.scope_groups.includes(group);
+            if (isGroupPresent) {
+                return prevState;
+            }
+            return {
+                ...prevState,
+                scope_groups: [...prevState.scope_groups, group]
+            };
+        });
     };
 
     const templateMenu = (
@@ -403,7 +431,7 @@ number"
                                 onChange={(e) => handleSettingsChange('nmap_settings', 'exclude_ports', e.target.value)}
                             />
                         </div>
-                        <div className={css.inputWrapper}>
+                        {/* <div className={css.inputWrapper}>
                             <label>Template Concurrency:</label>
                             <input
                                 type="number"
@@ -413,8 +441,8 @@ number"
                                     template_concurrency: parseInt(e.target.value)
                                 })}
                             />
-                        </div>
-                        <div className={css.inputWrapper}>
+                        </div> */}
+                        {/* <div className={css.inputWrapper}>
                             <label>Host Concurrency:</label>
                             <input
                                 type="number"
@@ -424,8 +452,8 @@ number"
                                     host_concurrency: parseInt(e.target.value)
                                 })}
                             />
-                        </div>
-                        <div className={css.inputWrapper}>
+                        </div> */}
+                        {/* <div className={css.inputWrapper}>
                             <label>Headless Host Concurrency:</label>
                             <input
                                 type="number"
@@ -435,8 +463,8 @@ number"
                                     headless_host_concurrency: parseInt(e.target.value)
                                 })}
                             />
-                        </div>
-                        <div className={css.inputWrapper}>
+                        </div> */}
+                        {/* <div className={css.inputWrapper}>
                             <label>Headless Template Concurrency:</label>
                             <input
                                 type="number"
@@ -446,8 +474,8 @@ number"
                                     headless_template_concurrency: parseInt(e.target.value)
                                 })}
                             />
-                        </div>
-                        <div className={css.inputWrapper}>
+                        </div> */}
+                        {/* <div className={css.inputWrapper}>
                             <label>JavaScript Template Concurrency:</label>
                             <input
                                 type="number"
@@ -457,8 +485,8 @@ number"
                                     javascript_template_concurrency: parseInt(e.target.value)
                                 })}
                             />
-                        </div>
-                        <div className={css.inputWrapper}>
+                        </div> */}
+                        {/* <div className={css.inputWrapper}>
                             <label>Template Payload Concurrency:</label>
                             <input
                                 type="number"
@@ -466,6 +494,17 @@ number"
                                 onChange={(e) => handleSettingsChange('nuclei_settings', 'concurrency', {
                                     ...settingsData.nuclei_settings.concurrency,
                                     template_payload_concurrency: parseInt(e.target.value)
+                                })}
+                            />
+                        </div> */}
+                        <div className={css.inputWrapper}>
+                            <label>Template Payload Concurrency:</label>
+                            <input
+                                type="number"
+                                value={settingsData.nuclei_settings.concurrency.rate_limit_per_host}
+                                onChange={(e) => handleSettingsChange('nuclei_settings', 'concurrency', {
+                                    ...settingsData.nuclei_settings.concurrency,
+                                    rate_limit_per_host: parseInt(e.target.value)
                                 })}
                             />
                         </div>
@@ -895,22 +934,22 @@ number"
                                 onChange={(e) => handleSettingsChange('nuclei_settings', 'dialer_keep_alive', e.target.value)}
                             />
                         </div>
-                        <div className={css.inputWrapper}>
+                        {/* <div className={css.inputWrapper}>
                             <label>Global Rate Limit Max Tokens:</label>
                             <input
                                 type="number"
                                 value={settingsData.nuclei_settings.global_rate_limit_max_tokens}
                                 onChange={(e) => handleSettingsChange('nuclei_settings', 'global_rate_limit_max_tokens', parseInt(e.target.value))}
                             />
-                        </div>
-                        <div className={css.inputWrapper}>
+                        </div> */}
+                        {/* <div className={css.inputWrapper}>
                             <label>Global Rate Limit Duration:</label>
                             <input
                                 type="text"
                                 value={settingsData.nuclei_settings.global_rate_limit_duration}
                                 onChange={(e) => handleSettingsChange('nuclei_settings', 'global_rate_limit_duration', e.target.value)}
                             />
-                        </div>
+                        </div> */}
                     </div>
                     <Modal isOpen={isOpenGroup} onClose={() => toggleModal('group', false)}>
                         <div className={css.modalContent}>
