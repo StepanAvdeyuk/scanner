@@ -1,13 +1,16 @@
 
 import { DownOutlined } from '@ant-design/icons';
-import { Dropdown, Menu, Space } from 'antd';
+import { Dropdown, Menu, Space, Button } from 'antd';
 import axios from 'axios';
 import React, { FC, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { API_TOKEN } from '../../API/consts';
-import Button from '../../shared/ui-kit/Button';
+import { API_TOKEN, BASE_URL } from '../../API/consts';
+import { MinusCircleOutlined } from '@ant-design/icons';
+import SharedButton from '../../shared/ui-kit/Button';
+import SettingsForm from './SettingsForm';
 import Modal from '../../shared/ui-kit/Modal';
 import css from './index.module.scss';
+
 
 const ScanAddPage: FC = () => {
 
@@ -64,12 +67,6 @@ const ScanAddPage: FC = () => {
         },
         nuclei_settings: {
             concurrency: {
-                // template_concurrency: 0,
-                // host_concurrency: 0,
-                // headless_host_concurrency: 0,
-                // headless_template_concurrency: 0,
-                // javascript_template_concurrency: 0,
-                // template_payload_concurrency: 0,
                 rate_limit_per_host: 0,
             },
             interactsh_options: {
@@ -115,8 +112,6 @@ const ScanAddPage: FC = () => {
             force_attempt_http2: false,
             dialer_timeout: '',
             dialer_keep_alive: '',
-            // global_rate_limit_max_tokens: 0,
-            // global_rate_limit_duration: ''
         }
     });
 
@@ -181,6 +176,22 @@ const ScanAddPage: FC = () => {
         // await fetchSettingsData();
         setIsMainBlockVisible(true);
     };
+
+    const getScopeGroups = async () => {
+        try {
+            const response = await axios.get(`${BASE_URL}/scope/`, {
+                headers: {
+                    'Authorization': `Token ${API_TOKEN}`
+                }
+            }).then((res) => setScopeGroups(res.data.map(item => item.name)));
+        } catch (error) {
+            console.error('Ошибка получения Scope групп:', error);
+        }
+    }
+
+    React.useEffect(() => {
+        getScopeGroups();
+    }, [])
 
     const handleSaveGroup = async () => {
         setNameError('');
@@ -316,12 +327,12 @@ const ScanAddPage: FC = () => {
 
     const scopeGroupMenu = (
         <Menu>
-            {scopeGroups.map((group, index) => (
+            {scopeGroups && scopeGroups.map((group, index) => (
                 <Menu.Item key={index} onClick={() => handleSelectGroup(group)}>{group}</Menu.Item>
             ))}
-            <Menu.Item key="create" onClick={() => toggleModal('group', true)}>
+            {/* <Menu.Item key="create" onClick={() => toggleModal('group', true)}>
                 Создать
-            </Menu.Item>
+            </Menu.Item> */}
         </Menu>
     );
 
@@ -359,598 +370,23 @@ const ScanAddPage: FC = () => {
         }));
     };
 
+    const removeGroup = (index) => {
+        setSettingsData(prevState => ({
+            ...prevState,
+            scope_groups: prevState.scope_groups.filter((_, i) => i !== index)
+        }));
+    };
+
 return (
         <div className={css.scanAddPageWrapper}>
             {isMainBlockVisible ? (
                 <div className={css.scanAddPageForm}>
-                    <div>
-                        <h2>Основные настройки</h2>
-                        <div className={css.inputWrapper}>
-                            <label>Scan:</label>
-                            <input
-                                type="text"
-                                value={settingsData.scan}
-                                onChange={(e) => handleSettingsChange('settingsData', 'scan', e.target.value)}
-                            />
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Scope Groups:</label>
-                            <Dropdown overlay={scopeGroupMenu}>
-                                <a onClick={(e) => e.preventDefault()}>
-                                    <Space>
-                                        Выберите группу
-                                        <DownOutlined />
-                                    </Space>
-                                </a>
-                            </Dropdown>
-                            <div className={css.dropdownSelectedBlock}>
-                                {settingsData.scope_groups.map((group, index) => (
-                                    <div key={index}>{group}</div>
-                                ))}
-                            </div>
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Nmap Min Rate:</label>
-                            <input
-                                type="number"
-                                value={settingsData.nmap_settings.min_rate}
-                                onChange={(e) => handleSettingsChange('nmap_settings', 'min_rate', parseInt(e.target.value))}
-                            />
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Version Intensity:</label>
-                            <input
-                                type="number"
-                                value={settingsData.nmap_settings.version_intensity}
-                                onChange={(e) => handleSettingsChange('nmap_settings', 'version_intensity', parseInt(e.target.value))}
-                            />
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Ports:</label>
-                            <input
-                                type="text"
-                                value={settingsData.nmap_settings.ports}
-                                onChange={(e) => handleSettingsChange('nmap_settings', 'ports', e.target.value)}
-                            />
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Top Ports:</label>
-                            <input
-                                type="
-
-number"
-                                value={settingsData.nmap_settings.top_ports}
-                                onChange={(e) => handleSettingsChange('nmap_settings', 'top_ports', parseInt(e.target.value))}
-                            />
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Exclude Ports:</label>
-                            <input
-                                type="text"
-                                value={settingsData.nmap_settings.exclude_ports}
-                                onChange={(e) => handleSettingsChange('nmap_settings', 'exclude_ports', e.target.value)}
-                            />
-                        </div>
-                        {/* <div className={css.inputWrapper}>
-                            <label>Template Concurrency:</label>
-                            <input
-                                type="number"
-                                value={settingsData.nuclei_settings.concurrency.template_concurrency}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'concurrency', {
-                                    ...settingsData.nuclei_settings.concurrency,
-                                    template_concurrency: parseInt(e.target.value)
-                                })}
-                            />
-                        </div> */}
-                        {/* <div className={css.inputWrapper}>
-                            <label>Host Concurrency:</label>
-                            <input
-                                type="number"
-                                value={settingsData.nuclei_settings.concurrency.host_concurrency}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'concurrency', {
-                                    ...settingsData.nuclei_settings.concurrency,
-                                    host_concurrency: parseInt(e.target.value)
-                                })}
-                            />
-                        </div> */}
-                        {/* <div className={css.inputWrapper}>
-                            <label>Headless Host Concurrency:</label>
-                            <input
-                                type="number"
-                                value={settingsData.nuclei_settings.concurrency.headless_host_concurrency}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'concurrency', {
-                                    ...settingsData.nuclei_settings.concurrency,
-                                    headless_host_concurrency: parseInt(e.target.value)
-                                })}
-                            />
-                        </div> */}
-                        {/* <div className={css.inputWrapper}>
-                            <label>Headless Template Concurrency:</label>
-                            <input
-                                type="number"
-                                value={settingsData.nuclei_settings.concurrency.headless_template_concurrency}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'concurrency', {
-                                    ...settingsData.nuclei_settings.concurrency,
-                                    headless_template_concurrency: parseInt(e.target.value)
-                                })}
-                            />
-                        </div> */}
-                        {/* <div className={css.inputWrapper}>
-                            <label>JavaScript Template Concurrency:</label>
-                            <input
-                                type="number"
-                                value={settingsData.nuclei_settings.concurrency.javascript_template_concurrency}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'concurrency', {
-                                    ...settingsData.nuclei_settings.concurrency,
-                                    javascript_template_concurrency: parseInt(e.target.value)
-                                })}
-                            />
-                        </div> */}
-                        {/* <div className={css.inputWrapper}>
-                            <label>Template Payload Concurrency:</label>
-                            <input
-                                type="number"
-                                value={settingsData.nuclei_settings.concurrency.template_payload_concurrency}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'concurrency', {
-                                    ...settingsData.nuclei_settings.concurrency,
-                                    template_payload_concurrency: parseInt(e.target.value)
-                                })}
-                            />
-                        </div> */}
-                        <div className={css.inputWrapper}>
-                            <label>Template Payload Concurrency:</label>
-                            <input
-                                type="number"
-                                value={settingsData.nuclei_settings.concurrency.rate_limit_per_host}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'concurrency', {
-                                    ...settingsData.nuclei_settings.concurrency,
-                                    rate_limit_per_host: parseInt(e.target.value)
-                                })}
-                            />
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Server URL:</label>
-                            <input
-                                type="text"
-                                value={settingsData.nuclei_settings.interactsh_options.server_url}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'interactsh_options', {
-                                    ...settingsData.nuclei_settings.interactsh_options,
-                                    server_url: e.target.value
-                                })}
-                            />
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Auth:</label>
-                            <input
-                                type="text"
-                                value={settingsData.nuclei_settings.interactsh_options.auth}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'interactsh_options', {
-                                    ...settingsData.nuclei_settings.interactsh_options,
-                                    auth: e.target.value
-                                })}
-                            />
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Cache Size:</label>
-                            <input
-                                type="number"
-                                value={settingsData.nuclei_settings.interactsh_options.cache_size}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'interactsh_options', {
-                                    ...settingsData.nuclei_settings.interactsh_options,
-                                    cache_size: parseInt(e.target.value)
-                                })}
-                            />
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>No Interactsh:</label>
-                            <input
-                                type="checkbox"
-                                checked={settingsData.nuclei_settings.interactsh_options.no_interactsh}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'interactsh_options', {
-                                    ...settingsData.nuclei_settings.interactsh_options,
-                                    no_interactsh: e.target.checked
-                                })}
-                            />
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Disable Max Host Err:</label>
-                            <input
-                                type="checkbox"
-                                checked={settingsData.nuclei_settings.network_config.disable_max_host_err}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'network_config', {
-                                    ...settingsData.nuclei_settings.network_config,
-                                    disable_max_host_err: e.target.checked
-                                })}
-                            />
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Interface:</label>
-                            <input
-                                type="text"
-                                value={settingsData.nuclei_settings.network_config.interface}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'network_config', {
-                                    ...settingsData.nuclei_settings.network_config,
-                                    interface: e.target.value
-                                })}
-                            />
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Internal Resolvers List:</label>
-                            {settingsData.nuclei_settings.network_config.internal_resolvers_list.map((resolver: string, index: number) => (
-                                <input
-                                    key={index}
-                                    type="text"
-                                    value={resolver}
-                                    onChange={(e) => {
-                                        const newResolversList = [...settingsData.nuclei_settings.network_config.internal_resolvers_list];
-                                        newResolversList[index] = e.target.value;
-                                        handleSettingsChange('nuclei_settings', 'network_config', {
-                                            ...settingsData.nuclei_settings.network_config,
-                                            internal_resolvers_list: newResolversList
-                                        });
-                                    }}
-                                />
-                            ))}
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Leave Default Ports:</label>
-                            <input
-                                type="checkbox"
-                                checked={settingsData.nuclei_settings.network_config.leave_default_ports}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'network_config', {
-                                    ...settingsData.nuclei_settings.network_config,
-                                    leave_default_ports: e.target.checked
-                                })}
-                            />
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Max Host Error:</label>
-                            <input
-                                type="number"
-                                value={settingsData.nuclei_settings.network_config.max_host_error}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'network_config', {
-                                    ...settingsData.nuclei_settings.network_config,
-                                    max_host_error: parseInt(e.target.value)
-                                })}
-                            />
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Retries:</label>
-                            <input
-                                type="number"
-                                value={settingsData.nuclei_settings.network_config.retries}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'network_config', {
-                                    ...settingsData.nuclei_settings.network_config,
-                                    retries: parseInt(e.target.value)
-                                })}
-                            />
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Source IP:</label>
-                            <input
-                                type="text"
-                                value={settingsData.nuclei_settings.network_config.source_ip}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'network_config', {
-                                    ...settingsData.nuclei_settings.network_config,
-                                    source_ip: e.target.value
-                                })}
-                            />
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>System Resolvers:</label>
-                            <input
-                                type="checkbox"
-                                checked={settingsData.nuclei_settings.network_config.system_resolvers}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'network_config', {
-                                    ...settingsData.nuclei_settings.network_config,
-                                    system_resolvers: e.target.checked
-                                })}
-                            />
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Timeout:</label>
-                            <input
-                                type="number"
-                                value={settingsData.nuclei_settings.network_config.timeout}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'network_config', {
-                                    ...settingsData.nuclei_settings.network_config,
-                                    timeout: parseInt(e.target.value)
-                                })}
-                            />
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Track Error:</label>
-                            {settingsData.nuclei_settings.network_config.track_error.map((error: string, index: number) => (
-                            <input
-                                key={index}
-                                type="text"
-                                value={error}
-                                onChange={(e) => {
-                                    const newTrackError = [...settingsData.nuclei_settings.network_config.track_error];
-                                    newTrackError[index] = e.target.value;
-                                    handleSettingsChange('nuclei_settings', 'network_config', {
-                                        ...settingsData.nuclei_settings.network_config,
-                                        track_error: newTrackError
-                                    });
-                                }}
-                            />
-                        ))}
-
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Severity:</label>
-                            <input
-                                type="text"
-                                value={settingsData.nuclei_settings.template_filters.severity}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'template_filters', {
-                                    ...settingsData.nuclei_settings.template_filters,
-                                    severity: e.target.value
-                                })}
-                            />
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Exclude Severities:</label>
-                            <input
-                                type="text"
-                                value={settingsData.nuclei_settings.template_filters.exclude_severities}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'template_filters', {
-                                    ...settingsData.nuclei_settings.template_filters,
-                                    exclude_severities: e.target.value
-                                })}
-                            />
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Protocol Types:</label>
-                            <input
-                                type="text"
-                                value={settingsData.nuclei_settings.template_filters.protocol_types}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'template_filters', {
-                                    ...settingsData.nuclei_settings.template_filters,
-                                    protocol_types: e.target.value
-                                })}
-                            />
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Exclude Protocol Types:</label>
-                            <input
-                                type="text"
-                                value={settingsData.nuclei_settings.template_filters.exclude_protocol_types}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'template_filters', {
-                                    ...settingsData.nuclei_settings.template_filters,
-                                    exclude_protocol_types: e.target.value
-                                })}
-                            />
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Authors:</label>
-                            {settingsData.nuclei_settings.template_filters.authors.map((author: string, index: number) => (
-                                <input
-                                    key={index}
-                                    type="text"
-                                    value={author}
-                                    onChange={(e) => {
-                                        const newAuthors = [...settingsData.nuclei_settings.template_filters.authors];
-                                        newAuthors[index] = e.target.value;
-                                        handleSettingsChange('nuclei_settings', 'template_filters', {
-                                            ...settingsData.nuclei_settings.template_filters,
-                                            authors: newAuthors
-                                        });
-                                    }}
-                                />
-                            ))}
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Tags:</label>
-                            {settingsData.nuclei_settings.template_filters.tags.map((tag: string, index: number) => (
-                                <input
-                                    key={index}
-                                    type="text"
-                                    value={tag}
-                                    onChange={(e) => {
-                                        const newTags = [...settingsData.nuclei_settings.template_filters.tags];
-                                        newTags[index] = e.target.value;
-                                        handleSettingsChange('nuclei_settings', 'template_filters', {
-                                            ...settingsData.nuclei_settings.template_filters,
-                                            tags: newTags
-                                        });
-                                    }}
-                                />
-                            ))}
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Exclude Tags:</label>
-                            {settingsData.nuclei_settings.template_filters.exclude_tags.map((tag: string, index: number) => (
-                                <input
-                                    key={index}
-                                    type="text"
-                                    value={tag}
-                                    onChange={(e) => {
-                                        const newExcludeTags = [...settingsData.nuclei_settings.template_filters.exclude_tags];
-                                        newExcludeTags[index] = e.target.value;
-                                        handleSettingsChange('nuclei_settings', 'template_filters', {
-                                            ...settingsData.nuclei_settings.template_filters,
-                                            exclude_tags: newExcludeTags
-                                        });
-                                    }}
-                                />
-                            ))}
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Include Tags:</label>
-                            {settingsData.nuclei_settings.template_filters.include_tags.map((tag: string, index: number) => (
-                                <input
-                                    key={index}
-                                    type="text"
-                                    value={tag}
-                                    onChange={(e) => {
-                                        const newIncludeTags = [...settingsData.nuclei_settings.template_filters.include_tags];
-                                        newIncludeTags[index] = e.target.value;
-                                        handleSettingsChange('nuclei_settings', 'template_filters', {
-                                            ...settingsData.nuclei_settings.template_filters,
-                                            include_tags: newIncludeTags
-                                        });
-                                    }}
-                                />
-                            ))}
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>IDs:</label>
-                            {settingsData.nuclei_settings.template_filters.ids.map((id: string, index: number) => (
-                                <input
-                                    key={index}
-                                    type="text"
-                                    value={id}
-                                    onChange={(e) => {
-                                        const newIds = [...settingsData.nuclei_settings.template_filters.ids];
-                                        newIds[index] = e.target.value;
-                                        handleSettingsChange('nuclei_settings', 'template_filters', {
-                                            ...settingsData.nuclei_settings.template_filters,
-                                            ids: newIds
-                                        });
-                                    }}
-                                />
-                            ))}
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Exclude IDs:</label>
-                            {settingsData.nuclei_settings.template_filters.exclude_ids.map((id: string, index: number) => (
-                                <input
-                                    key={index}
-                                    type="text"
-                                    value={id}
-                                    onChange={(e) => {
-                                        const newExcludeIds = [...settingsData.nuclei_settings.template_filters.exclude_ids];
-                                        newExcludeIds[index] = e.target.value;
-                                        handleSettingsChange('nuclei_settings', 'template_filters', {
-                                            ...settingsData.nuclei_settings.template_filters,
-                                            exclude_ids: newExcludeIds
-                                        });
-                                    }}
-                                />
-                            ))}
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Template Condition:</label>
-                            {settingsData.nuclei_settings.template_filters.template_condition.map((condition: string, index: number) => (
-                                <input
-                                    key={index}
-                                    type="text"
-                                    value={condition}
-                                    onChange={(e) => {
-                                        const newTemplateCondition = [...settingsData.nuclei_settings.template_filters.template_condition];
-                                        newTemplateCondition[index] = e.target.value;
-                                        handleSettingsChange('nuclei_settings', 'template_filters', {
-                                            ...settingsData.nuclei_settings.template_filters,
-                                            template_condition: newTemplateCondition
-                                        });
-                                    }}
-                                />
-                            ))}
-                        </div>
-                        <div className={css.inputWrapper}>
-                        {/* <label>Template sources:</label>
-                        <Dropdown overlay={templateMenu}>
-                            <a onClick={(e) => e.preventDefault()}>
-                                <Space>
-                                    Выберите шаблон
-                                    <DownOutlined />
-                                </Space>
-                            </a>
-                        </Dropdown> */}
-                        {/* <div>
-                            {settingsData.template_sources.templates.map((template, index) => (
-                                <div key={index}>{template}</div>
-                            ))}
-                        </div> */}
-                    </div>
-                        <div className={css.inputWrapper}>
-                            <label>Headers:</label>
-                            {settingsData.nuclei_settings.headers.map((header: string, index: number) => (
-                                <input
-                                    key={index}
-                                    type="text"
-                                    value={header}
-                                    onChange={(e) => {
-                                        const newHeaders = [...settingsData.nuclei_settings.headers];
-                                        newHeaders[index] = e.target.value;
-                                        handleSettingsChange('nuclei_settings', 'headers', newHeaders);
-                                    }}
-                                />
-                            ))}
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Follow Redirects:</label>
-                            <input
-                                type="checkbox"
-                                checked={settingsData.nuclei_settings.follow_redirects}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'follow_redirects', e.target.checked)}
-                            />
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Follow Host Redirects:</label>
-                            <input
-                                type="checkbox"
-                                checked={settingsData.nuclei_settings.follow_host_redirects}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'follow_host_redirects', e.target.checked)}
-                            />
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Max Redirects:</label>
-                            <input
-                                type="number"
-                                value={settingsData.nuclei_settings.max_redirects}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'max_redirects', parseInt(e.target.value))}
-                            />
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Disable Redirects:</label>
-                            <input
-                                type="checkbox"
-                                checked={settingsData.nuclei_settings.disable_redirects}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'disable_redirects', e.target.checked)}
-                            />
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Force Attempt HTTP2:</label>
-                            <input
-                                type="checkbox"
-                                checked={settingsData.nuclei_settings.force_attempt_http2}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'force_attempt_http2', e.target.checked)}
-                            />
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Dialer Timeout:</label>
-                            <input
-                                type="text"
-                                value={settingsData.nuclei_settings.dialer_timeout}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'dialer_timeout', e.target.value)}
-                            />
-                        </div>
-                        <div className={css.inputWrapper}>
-                            <label>Dialer Keep Alive:</label>
-                            <input
-                                type="text"
-                                value={settingsData.nuclei_settings.dialer_keep_alive}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'dialer_keep_alive', e.target.value)}
-                            />
-                        </div>
-                        {/* <div className={css.inputWrapper}>
-                            <label>Global Rate Limit Max Tokens:</label>
-                            <input
-                                type="number"
-                                value={settingsData.nuclei_settings.global_rate_limit_max_tokens}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'global_rate_limit_max_tokens', parseInt(e.target.value))}
-                            />
-                        </div> */}
-                        {/* <div className={css.inputWrapper}>
-                            <label>Global Rate Limit Duration:</label>
-                            <input
-                                type="text"
-                                value={settingsData.nuclei_settings.global_rate_limit_duration}
-                                onChange={(e) => handleSettingsChange('nuclei_settings', 'global_rate_limit_duration', e.target.value)}
-                            />
-                        </div> */}
-                    </div>
+                    <SettingsForm 
+                        settingsData={settingsData} 
+                        handleSettingsChange={handleSettingsChange} 
+                        scopeGroupMenu={scopeGroupMenu} 
+                        removeGroup={removeGroup}
+                    />
                     <Modal isOpen={isOpenGroup} onClose={() => toggleModal('group', false)}>
                         <div className={css.modalContent}>
                             <h2>Создать скоп группу</h2>
@@ -968,13 +404,13 @@ number"
                                 </div>
                                 <div className={css.inputWrapper}>
                                     <div>IP:</div>
-                                    <Button
+                                    <SharedButton
                                         type="primary"
                                         icon
                                         rounded
                                         onClick={addIpField}>
                                         <div>+</div>
-                                    </Button>
+                                    </SharedButton>
                                     {ips.map((ip, index) => (
                                         <div key={index}>
                                             <label>
@@ -990,13 +426,13 @@ number"
                                 </div>
                                 <div className={css.inputWrapper}>
                                     <div>Домен:</div>
-                                    <Button
+                                    <SharedButton
                                         type="primary"
                                         icon
                                         rounded
                                         onClick={addDomainField}>
                                         <div>+</div>
-                                    </Button>
+                                    </SharedButton>
                                     {domains.map((domain, index) => (
                                         <div key={index}>
                                             <label>
@@ -1010,13 +446,13 @@ number"
                                     ))}
                                 </div>
                             </form>
-                            <Button
+                            <SharedButton
                                 size="small"
                                 type="secondary"
                                 onClick={handleSaveGroup}
                                 rounded>
                                 {saveStatus}
-                            </Button>
+                            </SharedButton>
                         </div>
                     </Modal>
                     <Modal isOpen={isOpenTemplate} onClose={() => toggleModal}>
@@ -1039,34 +475,34 @@ number"
                                     </label>
                                 </div>
                             </form>
-                            <Button
+                            <SharedButton
                                 size="small"
                                 type="secondary"
                                 onClick={handleSaveTemplate}
                                 rounded>
                                 {templateSaveStatus}
-                            </Button>
+                            </SharedButton>
                         </div>
                     </Modal>
-                    <Button
+                    <SharedButton
                         className={css.saveButton}
                         size="small"
                         type="primary"
                         onClick={handleSaveAllButton}
                         rounded>
                         <div>Сохранить</div>
-                    </Button>
+                    </SharedButton>
                 </div>
             ) : null}
             <div className={css.inputWrapper}>
                 <span>Создать скан</span>
-                <Button
+                <SharedButton
                     type="secondary"
                     icon
                     rounded
                     onClick={handleAddScanClick}>
                     <div>+</div>
-                </Button>
+                </SharedButton>
             </div>
 
         </div>

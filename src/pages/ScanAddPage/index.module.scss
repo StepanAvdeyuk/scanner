@@ -89,3 +89,26 @@
     min-height: 8px;
     min-width: 32px;
 }
+
+////
+
+.formItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    // margin-right: 16px;
+
+    .ant-form-item-label {
+        flex: 0 0 200px; 
+    }
+
+    .ant-form-item-control {
+        flex: 1;
+        display: flex;
+        align-items: center;
+    }
+
+    .ant-input {
+        width: 100%;
+    }
+}

@@ -161,13 +161,13 @@ const EventsPageCard: FC = () => {
 
     const acceptRisk = async (id: number) => {
         try {
-            const response = await axios.post(`${BASE_URL}/accepted_risk`, [id], {
+            const response = await axios.post(`${BASE_URL}/accepted_risk/`, {event_ids: [id]}, {
                 headers: {
                     'Authorization': `Token ${API_TOKEN}`,
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
                 }
-            });
+            }).then(() => alert('Риск принят'));
         } catch (error) {
             console.error('Ошибка принятия риска:', error);
         }
@@ -175,7 +175,7 @@ const EventsPageCard: FC = () => {
 
     const acceptRiskClick = (id: number) => {
         const event = eventsData?.events.find(event => event.id === id);
-        const userConfirmed = confirm(`Принять риск для ${id}?`);
+        const userConfirmed = confirm(`Принять риск для ${event?.info.name}?`);
         if (userConfirmed) {
             acceptRisk(id);
         } else {
