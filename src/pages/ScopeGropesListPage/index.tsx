@@ -82,8 +82,9 @@ const ScopeGropesListPage: FC = () => {
               openedScope={openedScope}
               >
             </EventModal>
-            {scopes && scopes.map((scope: any, index) => (
-              <SharedCard
+            {scopes && scopes.map((scope: any, index) => {
+              if (scope.name) {
+                return <SharedCard
                 key={index}
                 expanded
                 color="#ffffff"
@@ -92,7 +93,8 @@ const ScopeGropesListPage: FC = () => {
                 onClick={() => openModal(scope.id)}>
                 <span>{scope.name}</span>
               </SharedCard>
-            ))}
+              }
+            })}
           </div>
         </div>
         <div>

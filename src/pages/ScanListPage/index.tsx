@@ -1,10 +1,14 @@
 import { FC, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Button } from 'antd';
+import { PlayCircleOutlined } from '@ant-design/icons';
+import axios from 'axios';
 import css from './index.module.scss';
 import Card from '../../shared/ui-kit/Card';
-import Button from '../../shared/ui-kit/Button';
+import SharedButton from '../../shared/ui-kit/Button';
 import * as API from '../../API/api'; 
 import * as API_TYPES from '../../API/types';
+import { BASE_URL, API_TOKEN } from '../../API/consts';
 
 const ScanListPage: FC = () => {
   const navigate = useNavigate();
@@ -31,6 +35,25 @@ const ScanListPage: FC = () => {
     navigate('/scope-groups');
   };
 
+  const startScan = async (name) => {
+    const start_datetime = new Date().toISOString();;
+    try {
+        const response = await axios.post(`${BASE_URL}/scan/start/${name}/`, {start_datetime}, {
+          headers: {
+              'Authorization': `Token ${API_TOKEN}`,
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+          }
+      });
+    } catch (error) {
+        console.error('Ошибка запуска скана:', error);
+    }
+};
+
+  const handleStartClick = (name) => {
+    startScan(name);
+  }
+
   return (
     <div className={css.scanListPageWrapper}>
       <div>
@@ -46,17 +69,18 @@ const ScanListPage: FC = () => {
               onClick={() => handleCardClick(card.name)}
             >
               <span>{card.name}</span>
+              <Button size="medium" icon={<PlayCircleOutlined />} rounded={true} className={css.startButton} onClick={(e) => {e.stopPropagation();handleStartClick(card.name)}}></Button>
             </Card>
           ))}
         </div>
       </div>
       <div>
-        <Button size="medium" rounded={true} type="secondary" style={{"marginBottom": "10px"}} onClick={handleAddScanClick}>
+        <SharedButton size="medium" rounded={true} type="secondary" style={{"marginBottom": "10px"}} onClick={handleAddScanClick}>
           Создать скан
-        </Button>
-        <Button size="medium" rounded={true} type="secondary" onClick={handleScopeGropesClick}>
+        </SharedButton>
+        <SharedButton size="medium" rounded={true} type="secondary" onClick={handleScopeGropesClick}>
           Скоп группы
-        </Button>
+        </SharedButton>
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ import TopTabsMenu, { Tab } from '../../../../shared/ui-kit/HeaderMenu';
 import EventsPageCard from '../EventsPageCard';
 import InventoryPageCard from '../InventoryPageCard';
 import SettigsPageCard from '../SettigsPageCard';
+import SetSettigsPageCard  from '../SetSettingsPageCard';
 
 import * as API from '../../../../API/api'; 
 import * as API_TYPES from '../../../../API/types';
@@ -35,6 +36,13 @@ const ScanCardDetails: FC = () => {
     onSelectCallback: () => setActiveTab('events')
   };
 
+  const changeSettings: Tab = {
+    id: 'changeSettings',
+    label: 'Редактировать',
+    url: `/details/${name}/change-settings`,
+    onSelectCallback: () => setActiveTab('changeSettings')
+  };
+
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState(settingsTab.id); 
   const [reports, setReports] = useState<API_TYPES.Report[]>();
@@ -63,7 +71,7 @@ const ScanCardDetails: FC = () => {
   return (
     <div className={css.scanCardWrapper}>
       <TopTabsMenu 
-        tabs={[settingsTab, inventoryTab, eventTab]} 
+        tabs={[settingsTab, inventoryTab, eventTab, changeSettings]} 
         activeTabId={activeTab} 
         reportId={reportId}
         setReportIdCallback={setReportId}
@@ -73,6 +81,7 @@ const ScanCardDetails: FC = () => {
         <Route path='settings/:reportId' element={<SettigsPageCard />} />
         <Route path='inventory/:reportId' element={<InventoryPageCard />} />
         <Route path='events/:reportId' element={<EventsPageCard />} />
+        <Route path='change-settings/:reportId' element={<SetSettigsPageCard />} />
       </Routes>
     </div>
   );

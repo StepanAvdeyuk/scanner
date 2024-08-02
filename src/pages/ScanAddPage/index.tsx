@@ -34,18 +34,30 @@ const ScanAddPage: FC = () => {
 
     const navigate = useNavigate()
 
+    React.useEffect(() => {
+        try {
+            const response = axios.get(`${BASE_URL}/templates/upload/`, {
+                headers: {
+                    'Authorization': `Token ${API_TOKEN}`
+                }
+            }).then((res) => console.log('resss: ',res));
+        } catch (error) {
+            console.error('Ошибка получения Scope групп:', error);
+        }
+    }, [])
+
     const cleanSettingsData = (obj: any): any => {
         if (obj === null || obj === undefined) return obj;
         if (Array.isArray(obj)) {
             return obj
                 .map(cleanSettingsData) 
-                .filter(item => item !== null && item !== undefined && item !== '' && item !== 0);
+                .filter(item => item !== null && item !== undefined && item !== '');
         }
         if (typeof obj === 'object') {
             return Object.keys(obj)
                 .reduce((acc: any, key: string) => {
                     const value = cleanSettingsData(obj[key]);
-                    if (value !== null && value !== undefined && value !== '' && value !== 0) {
+                    if (value !== null && value !== undefined && value !== '') {
                         acc[key] = value;
                     }
                     return acc;
@@ -57,22 +69,22 @@ const ScanAddPage: FC = () => {
 
     const [settingsData, setSettingsData] = useState<any>({
         scan: 'test',
-        scope_groups: [''],
+        scope_groups: ['test'],
         nmap_settings: {
-            min_rate: 0,
-            version_intensity: 0,
+            min_rate: null,
+            version_intensity: null,
             ports: '',
-            top_ports: 0,
+            top_ports: null,
             exclude_ports: ''
         },
         nuclei_settings: {
             concurrency: {
-                rate_limit_per_host: 0,
+                rate_limit_per_host: null,
             },
             interactsh_options: {
                 server_url: '',
                 auth: '',
-                cache_size: 0,
+                cache_size: null,
                 no_interactsh: false
             },
             network_config: {
@@ -80,11 +92,11 @@ const ScanAddPage: FC = () => {
                 interface: '',
                 internal_resolvers_list: [''],
                 leave_default_ports: false,
-                max_host_error: 0,
-                retries: 0,
+                max_host_error: null,
+                retries: null,
                 source_ip: '',
                 system_resolvers: false,
-                timeout: 0,
+                timeout: null,
                 track_error: ['']
             },
             template_filters: {
@@ -106,7 +118,7 @@ const ScanAddPage: FC = () => {
             headers: ['test'],
             follow_redirects: false,
             follow_host_redirects: false,
-            max_redirects: 0,
+            max_redirects: null,
             disable_redirects: false,
             internal_resolvers_list: ['test'],
             force_attempt_http2: false,
@@ -183,7 +195,7 @@ const ScanAddPage: FC = () => {
                 headers: {
                     'Authorization': `Token ${API_TOKEN}`
                 }
-            }).then((res) => setScopeGroups(res.data.map(item => item.name)));
+            }).then((res) => setScopeGroups(res.data.filter(item => item.name).map(item => item.name)));
         } catch (error) {
             console.error('Ошибка получения Scope групп:', error);
         }
@@ -251,14 +263,14 @@ const ScanAddPage: FC = () => {
             });
 
             const newTemplate = response.data.name;
-            setTemplates([...templates, newTemplate]);
-            setSettingsData(prevState => ({
-                ...prevState,
-                template_sources: {
-                    ...prevState.template_sources,
-                    templates: [...prevState.template_sources.templates, newTemplate]
-                }
-            }));
+            // setTemplates([...templates, newTemplate]);
+            // setSettingsData(prevState => ({
+            //     ...prevState,
+            //     template_sources: {
+            //         ...prevState.template_sources,
+            //         templates: [...prevState.template_sources.templates, newTemplate]
+            //     }
+            // }));
             setTemplateSaveStatus('Сохранено');
             toggleModal('template', false);
         } catch (error) {
@@ -377,7 +389,8 @@ const ScanAddPage: FC = () => {
         }));
     };
 
-return (
+
+    return (
         <div className={css.scanAddPageWrapper}>
             {isMainBlockVisible ? (
                 <div className={css.scanAddPageForm}>
@@ -455,7 +468,16 @@ return (
                             </SharedButton>
                         </div>
                     </Modal>
-                    <Modal isOpen={isOpenTemplate} onClose={() => toggleModal}>
+                    <Button
+                        className={css.saveButton}
+                        type="primary"
+                        onClick={handleSaveAllButton}
+                        rounded>
+                        <div>Сохранить</div>
+                    </Button>
+                </div>
+            ) : null}
+            <Modal isOpen={isOpenTemplate} onClose={() => setIsOpenTemplate(false)}>
                         <div className={css.modalContent}>
                             <h2>Создать template</h2>
                             <form>
@@ -483,17 +505,7 @@ return (
                                 {templateSaveStatus}
                             </SharedButton>
                         </div>
-                    </Modal>
-                    <SharedButton
-                        className={css.saveButton}
-                        size="small"
-                        type="primary"
-                        onClick={handleSaveAllButton}
-                        rounded>
-                        <div>Сохранить</div>
-                    </SharedButton>
-                </div>
-            ) : null}
+            </Modal>
             <div className={css.inputWrapper}>
                 <span>Создать скан</span>
                 <SharedButton
@@ -501,6 +513,16 @@ return (
                     icon
                     rounded
                     onClick={handleAddScanClick}>
+                    <div>+</div>
+                </SharedButton>
+            </div>
+            <div className={css.inputWrapper}>
+                <span>Загрузить template</span>
+                <SharedButton
+                    type="secondary"
+                    icon
+                    rounded
+                    onClick={() => setIsOpenTemplate(true)}>
                     <div>+</div>
                 </SharedButton>
             </div>

@@ -9,6 +9,7 @@
   background: $main-gradient;
   overflow: hidden;
   transition: transform 0.3s ease-in-out;
+  position: relative;
 
   &.small {
     width: 100px;

@@ -1,8 +1,12 @@
 import { FC, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { Card, Collapse, List, Typography } from 'antd';
 import ProgressBar from '../../../../shared/ui-kit/ProgressBar';
 import css from './index.module.scss';
 import * as API from '../../../../API/api';
+
+const { Panel } = Collapse;
+const { Text } = Typography;
 
 interface ScanSettings {
     scan: string;

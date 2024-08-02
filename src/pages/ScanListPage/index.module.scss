@@ -1,8 +1,9 @@
 @import '../../shared/mixins.scss';
 
 .scanListPageWrapper {
+    box-sizing: border-box;
     background-color:$background;
-    width: auto;
+    width: 100%;
     height: auto;
     min-height: 100vh;
     display: flex;
@@ -31,5 +32,12 @@
     gap: 32px;
     width: 100%;
     box-sizing: border-box;
+    margin-top: 30px;
+}
+
+.startButton {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
 }
 
