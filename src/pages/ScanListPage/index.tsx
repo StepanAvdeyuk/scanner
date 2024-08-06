@@ -23,6 +23,18 @@ const ScanListPage: FC = () => {
     });
   }, []);
 
+  useEffect(() => {
+      try {
+          axios.get(`${BASE_URL}/scan/status/miit_scan/`,  {
+            headers: {
+                'Authorization': `Token ${API_TOKEN}`
+            }
+          }).then(res => console.log(res));
+      } catch (error) {
+          console.error('Ошибка:', error);
+      }
+  }, [])
+
   const handleCardClick = (name: string) => {
     navigate(`/details/${name}/`);
   };

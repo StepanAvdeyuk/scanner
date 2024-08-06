@@ -262,7 +262,7 @@ const ScanAddPage: FC = () => {
                 }
             });
 
-            const newTemplate = response.data.name;
+            // const newTemplate = response.data.name;
             // setTemplates([...templates, newTemplate]);
             // setSettingsData(prevState => ({
             //     ...prevState,
@@ -329,6 +329,7 @@ const ScanAddPage: FC = () => {
         })
         .catch(error => {
             console.error('Ошибка при сохранении настроек:', error);
+            alert(`Ошибка при сохранении настроек: ${error.message}`)
         });
     };
 

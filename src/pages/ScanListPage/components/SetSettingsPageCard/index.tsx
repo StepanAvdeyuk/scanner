@@ -206,6 +206,7 @@ const SettingsPageCard: FC = () => {
         })
         .catch(error => {
             console.error('Ошибка при сохранении настроек:', error);
+            alert(`Ошибка при сохранении настроек: ${error.message}`)
         });
     };
 
