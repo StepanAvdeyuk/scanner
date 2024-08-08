@@ -400,6 +400,7 @@ const ScanAddPage: FC = () => {
                         handleSettingsChange={handleSettingsChange} 
                         scopeGroupMenu={scopeGroupMenu} 
                         removeGroup={removeGroup}
+                        showStatus={false}
                     />
                     <Modal isOpen={isOpenGroup} onClose={() => toggleModal('group', false)}>
                         <div className={css.modalContent}>

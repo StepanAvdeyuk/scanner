@@ -9,7 +9,7 @@ import css from './index.module.scss';
 
 const { Item: FormItem, List: FormList } = Form;
 
-const SettingsForm = ({ settingsData, handleSettingsChange, scopeGroupMenu, removeGroup }) => {
+const SettingsForm = ({ settingsData, handleSettingsChange, scopeGroupMenu, removeGroup, showStatus }) => {
 
 
     const [editableFields, setEditableFields] = React.useState({});
@@ -28,7 +28,7 @@ const SettingsForm = ({ settingsData, handleSettingsChange, scopeGroupMenu, remo
     };
 
     React.useEffect(() => {
-        if (settingsData.scan) {
+        if (settingsData.scan && showStatus) {
             axios.get(`${BASE_URL}/scan/status/${settingsData.scan}/`,  {
                 headers: {
                     'Authorization': `Token ${API_TOKEN}`
@@ -43,7 +43,7 @@ const SettingsForm = ({ settingsData, handleSettingsChange, scopeGroupMenu, remo
 
     return (
         <Form layout="vertical">
-            <Title level={5}>Статус скана: {scanStatus || 'Не известен'}</Title>
+            {showStatus && <Title level={5}>Статус скана: {scanStatus || 'Не известен'}</Title>}
             <Title level={3}>Основные настройки</Title>
             <FormItem className={css.formItem} label="Scan">
                 <Space>

@@ -264,6 +264,7 @@ const SettingsPageCard: FC = () => {
                 handleSettingsChange={handleSettingsChange} 
                 scopeGroupMenu={scopeGroupMenu} 
                 removeGroup={removeGroup}
+                showStatus={true}
             />
             </div>
             <Button
