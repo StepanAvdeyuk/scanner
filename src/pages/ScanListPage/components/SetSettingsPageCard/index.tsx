@@ -6,9 +6,8 @@ import css from '../SettigsPageCard/index.module.scss';
 import css2 from './index.module.scss';
 import SettingsForm from '../../../ScanAddPage/SettingsForm';
 import * as API from '../../../../API/api';
-import { Dropdown, Menu, Space, Button } from 'antd';
+import { Menu, Button } from 'antd';
 import { BASE_URL, API_TOKEN } from '../../../../API/consts';
-import { axisClasses } from '@mui/x-charts';
 
 const SettingsPageCard: FC = () => {
     const [scanSettings, setScanSettings] = useState(); 

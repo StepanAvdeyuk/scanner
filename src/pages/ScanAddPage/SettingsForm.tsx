@@ -1,5 +1,8 @@
 import React from 'react';
-import { Form, Input, Button, Checkbox, Space, Dropdown, Menu } from 'antd';
+import { Form, Input, Button, Checkbox, Space, Dropdown, Menu, Typography } from 'antd';
+import axios from 'axios';
+const { Title } = Typography;
+import { BASE_URL, API_TOKEN } from '../../API/consts';
 import { MinusCircleOutlined, DownOutlined, EditOutlined } from '@ant-design/icons';
 import DynamicFieldList from './DynamicFieldList';
 import css from './index.module.scss';
@@ -10,6 +13,7 @@ const SettingsForm = ({ settingsData, handleSettingsChange, scopeGroupMenu, remo
 
 
     const [editableFields, setEditableFields] = React.useState({});
+    const [scanStatus, setScanStatus] = React.useState('');
 
     const handleToggleEdit = (key) => {
         setEditableFields(prev => {
@@ -23,19 +27,30 @@ const SettingsForm = ({ settingsData, handleSettingsChange, scopeGroupMenu, remo
         });
     };
 
+    React.useEffect(() => {
+        if (settingsData.scan) {
+            axios.get(`${BASE_URL}/scan/status/${settingsData.scan}/`,  {
+                headers: {
+                    'Authorization': `Token ${API_TOKEN}`
+                }
+              })
+              .then(res => setScanStatus(res.data.info))
+              .catch((error) => {
+                  console.error('Ошибка:', error);
+              });
+        }
+    }, [])
+
     return (
         <Form layout="vertical">
-            <h2>Основные настройки</h2>
-
+            <Title level={5}>Статус скана: {scanStatus || 'Не известен'}</Title>
+            <Title level={3}>Основные настройки</Title>
             <FormItem className={css.formItem} label="Scan">
                 <Space>
                     <Input
                         value={settingsData.scan}
                         disabled={!editableFields.scan}
                         onChange={(e) => handleSettingsChange('settingsData', 'scan', e.target.value)}
-                        rules={[
-                            { required: true, message: 'Введите Scan' },
-                        ]}
                     />
                     <Button
                         icon={<EditOutlined />}
