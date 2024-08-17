@@ -175,13 +175,17 @@ const SettingsPageCard: FC = () => {
 
     const cleanSettingsData = (obj: any): any => {
         if (obj === null || obj === undefined) return obj;
+    
         if (Array.isArray(obj)) {
-            return obj
+            const cleanedArray = obj
                 .map(cleanSettingsData) 
                 .filter(item => item !== null && item !== undefined && item !== '');
+    
+            return cleanedArray.length > 0 ? cleanedArray : undefined;
         }
-        if (typeof obj === 'object') {
-            return Object.keys(obj)
+    
+        if (typeof obj === 'object' && obj !== null) {
+            const cleanedObject = Object.keys(obj)
                 .reduce((acc: any, key: string) => {
                     const value = cleanSettingsData(obj[key]);
                     if (value !== null && value !== undefined && value !== '') {
@@ -189,9 +193,13 @@ const SettingsPageCard: FC = () => {
                     }
                     return acc;
                 }, {});
+    
+            return Object.keys(cleanedObject).length > 0 ? cleanedObject : undefined;
         }
+    
         return obj;
-    };
+    };     
+    
 
     const saveSettingsChanges = () => {
         axios.put(`${BASE_URL}/settings/`, cleanSettingsData(settingsData), {

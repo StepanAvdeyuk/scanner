@@ -42,7 +42,7 @@ const ScanAddPage: FC = () => {
                 headers: {
                     'Authorization': `Token ${API_TOKEN}`
                 }
-            }).then((res) => console.log('resss: ',res));
+            }).then((res) => console.log(res));
         } catch (error) {
             console.error('Ошибка получения Scope групп:', error);
         }
@@ -62,7 +62,6 @@ const ScanAddPage: FC = () => {
         if (typeof obj === 'object' && obj !== null) {
             const cleanedObject = Object.keys(obj)
                 .reduce((acc: any, key: string) => {
-                    console.log('key', key)
                     const value = cleanSettingsData(obj[key]);
                     if (value !== null && value !== undefined && value !== '') {
                         acc[key] = value;
@@ -74,8 +73,7 @@ const ScanAddPage: FC = () => {
         }
     
         return obj;
-    };
-    
+    };     
     
 
     const [settingsData, setSettingsData] = useState<any>({
