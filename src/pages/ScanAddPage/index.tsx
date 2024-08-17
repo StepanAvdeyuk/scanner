@@ -315,7 +315,7 @@ const ScanAddPage: FC = () => {
     };
 
     const handleSaveAll = () => {
-        axios.post('http://109.172.115.106:8000/api/v1/settings/', cleanSettingsData(settingsData), {
+        axios.post('http://109.172.115.106:8000/api/v1/settings/', cleanSettingsData(setDisabledSettingsData(settingsData)), {
             headers: {
                 'Authorization': `Token ${API_TOKEN}`,
                 'Accept': 'application/json',
@@ -399,6 +399,68 @@ const ScanAddPage: FC = () => {
             scope_groups: prevState.scope_groups.filter((_, i) => i !== index)
         }));
     };
+
+
+    const setDisabledSettingsData = (data) => {
+        return {
+            scan: editableFields.scan ? data.scan : null,
+            scope_groups: data.scope_groups,
+            nmap_settings: {
+                min_rate: editableFields.nmap_min_rate ?  data.nmap_settings.min_rate : null,
+                version_intensity: editableFields.version_intensity ? data.nmap_settings.version_intensity : null,
+                ports: editableFields.ports ? data.nmap_settings.ports : null,
+                top_ports: editableFields.top_ports ? data.nmap_settings.top_ports : null,
+                exclude_ports: editableFields.exclude_ports ? data.nmap_settings.exclude_ports : null
+            },
+            nuclei_settings: {
+                concurrency: {
+                    rate_limit_per_host: editableFields.template_payload_concurrency ? data.nuclei_settings.concurrency.rate_limit_per_host : null,
+                },
+                interactsh_options: {
+                    server_url: editableFields.server_url ? data.nuclei_settings.interactsh_options.server_url : null,
+                    auth: editableFields.auth ? data.nuclei_settings.interactsh_options.auth : null,
+                    cache_size: editableFields.cache_size ? data.nuclei_settings.interactsh_options.cache_size : null,
+                    no_interactsh: data.nuclei_settings.interactsh_options.no_interactsh
+                },
+                network_config: {
+                    disable_max_host_err: data.nuclei_settings.network_config.disable_max_host_err,
+                    interface: editableFields.interface ? data.nuclei_settings.network_config.interface : null,
+                    internal_resolvers_list: editableFields.internal_resolvers_list ? data.nuclei_settings.network_config.internal_resolvers_list : null,
+                    leave_default_ports: data.nuclei_settings.network_config.leave_default_ports,
+                    max_host_error: editableFields.max_host_error ? data.nuclei_settings.network_config.max_host_error : null,
+                    retries: editableFields.retries ? data.nuclei_settings.network_config.retries : null,
+                    source_ip: editableFields.source_ip ? data.nuclei_settings.network_config.source_ip : null,
+                    system_resolvers: data.nuclei_settings.network_config.system_resolvers,
+                    timeout: editableFields.timeout ? data.nuclei_settings.network_config.timeout : null,
+                    track_error: editableFields.track_error ? data.nuclei_settings.network_config.track_error : null
+                },
+                template_filters: {
+                    severity: editableFields.severity ? data.nuclei_settings.template_filters.severity : null,
+                    exclude_severities: editableFields.exclude_severities ? data.nuclei_settings.template_filters.exclude_severities : null,
+                    protocol_types: editableFields.protocol_types ? data.nuclei_settings.template_filters.protocol_types : null,
+                    exclude_protocol_types: editableFields.exclude_protocol_types ? data.nuclei_settings.template_filters.exclude_protocol_types : null,
+                    authors: editableFields.authors ? data.nuclei_settings.template_filters.authors : null,
+                    tags: editableFields.tags ? data.nuclei_settings.template_filters.tags : null,
+                    exclude_tags: editableFields.exclude_tags ? data.nuclei_settings.template_filters.exclude_tags : null,
+                    include_tags: editableFields.include_tags ? data.nuclei_settings.template_filters.include_tags : null,
+                    ids: editableFields.ids ? data.nuclei_settings.template_filters.ids : null,
+                    exclude_ids: editableFields.exclude_ids ? data.nuclei_settings.template_filters.exclude_ids : null,
+                    template_condition: editableFields.template_condition ? data.nuclei_settings.template_filters.template_condition : null
+                },
+                template_sources: {
+                    templates: editableFields.templates ? data.nuclei_settings.template_sources.template : null
+                },
+                headers: editableFields.headers ? data.nuclei_settings.headers : null,
+                follow_redirects: data.nuclei_settings.follow_redirects,
+                follow_host_redirects: data.nuclei_settings.follow_host_redirects,
+                max_redirects: editableFields.max_redirects ? data.nuclei_settings.max_redirects : null,
+                disable_redirects: data.nuclei_settings.disable_redirects,
+                internal_resolvers_list: editableFields.internal_resolvers_list2 ? data.nuclei_settings.internal_resolvers_list : null,
+                force_attempt_http2: data.nuclei_settings.force_attempt_http2,
+                dialer_timeout: editableFields.dialer_timeout ? data.nuclei_settings.dialer_timeout : null,
+                dialer_keep_alive: editableFields.dialer_keep_alive ? data.nuclei_settings.dialer_keep_alive : null,
+            }
+    }}
 
 
     return (
