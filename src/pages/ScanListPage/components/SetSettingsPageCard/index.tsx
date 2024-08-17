@@ -14,6 +14,7 @@ const SettingsPageCard: FC = () => {
     const { reportId } = useParams();
 
     const [scopeGroups, setScopeGroups] = useState<string[]>([]);
+    const [editableFields, setEditableFields] = React.useState({});
 
     useEffect(() => {
         const fetchScanSettings = async () => {
@@ -36,7 +37,7 @@ const SettingsPageCard: FC = () => {
     const setBaseSettingsData = (data) => {
         setSettingsData({
             scan: data.scan || '',
-            scope_groups: data.scope_groups || ['test'],
+            scope_groups: data.scope_groups || [''],
             nmap_settings: {
                 min_rate: data.nmap_settings.min_rate || null,
                 version_intensity: data.nmap_settings.version_intensity || null,
@@ -57,37 +58,37 @@ const SettingsPageCard: FC = () => {
                 network_config: {
                     disable_max_host_err: data.nuclei_settings.network_config.disable_max_host_err || false,
                     interface: data.nuclei_settings.network_config.interface || '',
-                    internal_resolvers_list: data.nuclei_settings.network_config.internal_resolvers_list || ['test'],
+                    internal_resolvers_list: data.nuclei_settings.network_config.internal_resolvers_list || [''],
                     leave_default_ports: data.nuclei_settings.network_config.leave_default_ports || false,
                     max_host_error: data.nuclei_settings.network_config.max_host_error || null,
                     retries: data.nuclei_settings.network_config.retries || null,
                     source_ip: data.nuclei_settings.network_config.source_ip || '',
                     system_resolvers: data.nuclei_settings.network_config.system_resolvers || false,
                     timeout: data.nuclei_settings.network_config.timeout || null,
-                    track_error: data.nuclei_settings.network_config.track_error || ['test']
+                    track_error: data.nuclei_settings.network_config.track_error || ['']
                 },
                 template_filters: {
                     severity: data.nuclei_settings.template_filters.severity || '',
                     exclude_severities: data.nuclei_settings.template_filters.exclude_severities || '',
                     protocol_types: data.nuclei_settings.template_filters.protocol_types || '',
                     exclude_protocol_types: data.nuclei_settings.template_filters.exclude_protocol_types || '',
-                    authors: data.nuclei_settings.template_filters.authors || ['test'],
-                    tags: data.nuclei_settings.template_filters.tags || ['test'],
-                    exclude_tags: data.nuclei_settings.template_filters.exclude_tags || ['test'],
-                    include_tags: data.nuclei_settings.template_filters.include_tags || ['test'],
-                    ids: data.nuclei_settings.template_filters.ids || ['test'],
-                    exclude_ids: data.nuclei_settings.template_filters.exclude_ids || ['test'],
-                    template_condition: data.nuclei_settings.template_filters.template_condition || ['test']
+                    authors: data.nuclei_settings.template_filters.authors || [''],
+                    tags: data.nuclei_settings.template_filters.tags || [''],
+                    exclude_tags: data.nuclei_settings.template_filters.exclude_tags || [''],
+                    include_tags: data.nuclei_settings.template_filters.include_tags || [''],
+                    ids: data.nuclei_settings.template_filters.ids || [''],
+                    exclude_ids: data.nuclei_settings.template_filters.exclude_ids || [''],
+                    template_condition: data.nuclei_settings.template_filters.template_condition || ['']
                 },
                 template_sources: {
-                    templates: data.nuclei_settings.template_sources.template || ['test']
+                    templates: data.nuclei_settings.template_sources.template || ['']
                 },
-                headers: data.nuclei_settings.headers || ['test'],
+                headers: data.nuclei_settings.headers || [''],
                 follow_redirects: data.nuclei_settings.follow_redirects || false,
                 follow_host_redirects: data.nuclei_settings.follow_host_redirects || false,
                 max_redirects: data.nuclei_settings.max_redirects || null,
                 disable_redirects: data.nuclei_settings.disable_redirects || false,
-                internal_resolvers_list: data.nuclei_settings.internal_resolvers_list || ['test'],
+                internal_resolvers_list: data.nuclei_settings.internal_resolvers_list || [''],
                 force_attempt_http2: data.nuclei_settings.force_attempt_http2 || false,
                 dialer_timeout: data.nuclei_settings.dialer_timeout || '',
                 dialer_keep_alive: data.nuclei_settings.dialer_keep_alive || '',
@@ -97,7 +98,7 @@ const SettingsPageCard: FC = () => {
 
     const [settingsData, setSettingsData] = useState<any>({
         scan: '',
-        scope_groups: ['test'],
+        scope_groups: [''],
         nmap_settings: {
             min_rate: null,
             version_intensity: null,
@@ -118,37 +119,37 @@ const SettingsPageCard: FC = () => {
             network_config: {
                 disable_max_host_err: false,
                 interface: '',
-                internal_resolvers_list: ['test'],
+                internal_resolvers_list: [''],
                 leave_default_ports: false,
                 max_host_error: null,
                 retries: null,
                 source_ip: '',
                 system_resolvers: false,
                 timeout: null,
-                track_error: ['test']
+                track_error: ['']
             },
             template_filters: {
                 severity: '',
                 exclude_severities: '',
                 protocol_types: '',
                 exclude_protocol_types: '',
-                authors: ['test'],
-                tags: ['test'],
-                exclude_tags: ['test'],
-                include_tags: ['test'],
-                ids: ['test'],
-                exclude_ids: ['test'],
-                template_condition: ['test']
+                authors: [''],
+                tags: [''],
+                exclude_tags: [''],
+                include_tags: [''],
+                ids: [''],
+                exclude_ids: [''],
+                template_condition: ['']
             },
             template_sources: {
-                templates: ['test']
+                templates: ['']
             },
-            headers: ['test'],
+            headers: [''],
             follow_redirects: false,
             follow_host_redirects: false,
             max_redirects: null,
             disable_redirects: false,
-            internal_resolvers_list: ['test'],
+            internal_resolvers_list: [''],
             force_attempt_http2: false,
             dialer_timeout: '',
             dialer_keep_alive: '',
@@ -265,6 +266,8 @@ const SettingsPageCard: FC = () => {
                 scopeGroupMenu={scopeGroupMenu} 
                 removeGroup={removeGroup}
                 showStatus={true}
+                editableFields={editableFields}
+                setEditableFields={setEditableFields}
             />
             </div>
             <Button

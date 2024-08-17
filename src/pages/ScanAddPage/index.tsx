@@ -31,6 +31,8 @@ const ScanAddPage: FC = () => {
 
     const [scopeGroups, setScopeGroups] = useState<string[]>([]);
     const [templates, setTemplates] = useState<string[]>([]);
+    
+    const [editableFields, setEditableFields] = React.useState({});
 
     const navigate = useNavigate()
 
@@ -48,28 +50,37 @@ const ScanAddPage: FC = () => {
 
     const cleanSettingsData = (obj: any): any => {
         if (obj === null || obj === undefined) return obj;
+    
         if (Array.isArray(obj)) {
-            return obj
+            const cleanedArray = obj
                 .map(cleanSettingsData) 
                 .filter(item => item !== null && item !== undefined && item !== '');
+    
+            return cleanedArray.length > 0 ? cleanedArray : undefined;
         }
-        if (typeof obj === 'object') {
-            return Object.keys(obj)
+    
+        if (typeof obj === 'object' && obj !== null) {
+            const cleanedObject = Object.keys(obj)
                 .reduce((acc: any, key: string) => {
+                    console.log('key', key)
                     const value = cleanSettingsData(obj[key]);
                     if (value !== null && value !== undefined && value !== '') {
                         acc[key] = value;
                     }
                     return acc;
                 }, {});
+    
+            return Object.keys(cleanedObject).length > 0 ? cleanedObject : undefined;
         }
+    
         return obj;
     };
     
+    
 
     const [settingsData, setSettingsData] = useState<any>({
-        scan: 'test',
-        scope_groups: ['test'],
+        scan: '',
+        scope_groups: [''],
         nmap_settings: {
             min_rate: null,
             version_intensity: null,
@@ -104,23 +115,23 @@ const ScanAddPage: FC = () => {
                 exclude_severities: '',
                 protocol_types: '',
                 exclude_protocol_types: '',
-                authors: ['test'],
-                tags: ['test'],
-                exclude_tags: ['test'],
-                include_tags: ['test'],
-                ids: ['test'],
-                exclude_ids: ['test'],
-                template_condition: ['test']
+                authors: [''],
+                tags: [''],
+                exclude_tags: [''],
+                include_tags: [''],
+                ids: [''],
+                exclude_ids: [''],
+                template_condition: ['']
             },
             template_sources: {
-                templates: ['test']
+                templates: ['']
             },
-            headers: ['test'],
+            headers: [''],
             follow_redirects: false,
             follow_host_redirects: false,
             max_redirects: null,
             disable_redirects: false,
-            internal_resolvers_list: ['test'],
+            internal_resolvers_list: [''],
             force_attempt_http2: false,
             dialer_timeout: '',
             dialer_keep_alive: '',
@@ -334,8 +345,8 @@ const ScanAddPage: FC = () => {
     };
 
     const handleSaveAllButton = () =>{
-        handleSaveAll()
         createScan(settingsData.scan);
+        handleSaveAll()
     }
 
     const scopeGroupMenu = (
@@ -401,6 +412,8 @@ const ScanAddPage: FC = () => {
                         scopeGroupMenu={scopeGroupMenu} 
                         removeGroup={removeGroup}
                         showStatus={false}
+                        editableFields={editableFields}
+                        setEditableFields={setEditableFields}
                     />
                     <Modal isOpen={isOpenGroup} onClose={() => toggleModal('group', false)}>
                         <div className={css.modalContent}>

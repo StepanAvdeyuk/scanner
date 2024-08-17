@@ -38,7 +38,7 @@ const ScanListPage: FC = () => {
   const startScan = async (name) => {
     const start_datetime = new Date().toISOString();;
     try {
-        const response = await axios.post(`${BASE_URL}/scan/start/${name}/`, {start_datetime}, {
+        const response = await axios.post(`${BASE_URL}/scan/start/${name}/`, {}, {
           headers: {
               'Authorization': `Token ${API_TOKEN}`,
               'Accept': 'application/json',

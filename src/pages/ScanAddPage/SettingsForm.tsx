@@ -9,10 +9,9 @@ import css from './index.module.scss';
 
 const { Item: FormItem, List: FormList } = Form;
 
-const SettingsForm = ({ settingsData, handleSettingsChange, scopeGroupMenu, removeGroup, showStatus }) => {
+const SettingsForm = ({ settingsData, handleSettingsChange, scopeGroupMenu, removeGroup, showStatus, editableFields, setEditableFields }) => {
 
 
-    const [editableFields, setEditableFields] = React.useState({});
     const [scanStatus, setScanStatus] = React.useState('');
 
     const handleToggleEdit = (key) => {

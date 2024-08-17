@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Form, Input, Button, Space, List } from 'antd';
 import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
+import { nanoid } from 'nanoid';
 
 const ScopeGroupModal = ({ isOpen, onClose, onSave }) => {
     const [form] = Form.useForm();
@@ -71,7 +72,6 @@ const ScopeGroupModal = ({ isOpen, onClose, onSave }) => {
                                 name={`ip-${index}`}
                                 style={{ flex: 1, margin: 0 }}
                                 rules={[
-                                    { required: true, message: 'Введите IP адрес' },
                                     { pattern: /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/, message: 'Введите корректный IP адрес' }
                                 ]}
                             >
@@ -97,7 +97,6 @@ const ScopeGroupModal = ({ isOpen, onClose, onSave }) => {
                             <Form.Item
                                 name={`domain-${index}`}
                                 style={{ flex: 1, margin: 0 }}
-                                rules={[{ required: true, message: 'Введите домен' }]}
                             >
                                 <Input placeholder="Домен" value={domain} onChange={(e) => {
                                     const newDomains = [...domains];

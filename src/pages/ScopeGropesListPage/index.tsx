@@ -7,6 +7,7 @@ import { BASE_URL, API_TOKEN } from '../../API/consts';
 import EventModal from './EventModal';
 import ScopeGroupModal from './ScopeGroupModal';
 
+
 const ScopeGropesListPage: FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScopeOpen, setIsScopeOpen] = useState(false);
@@ -19,10 +20,10 @@ const ScopeGropesListPage: FC = () => {
   const handleSave = (data) => {
     const sendData = {
       name: data.name,
-      ips: data.ips.map(ip => ({ ip, domains: [] })),
-      domains: data.domains.map(domain => ({ domain, ips: [] })),
-      display: true
-    }
+      display: true,
+      ...((data.ips[0] !== '') && { ips: data.ips.map(ip => ({ ip, domains: [] })) }),
+      ...((data.domains[0] !== '') && { domains: data.domains.map(domain => ({ domain, ips: [] })) })
+    };    
     addScopeGroup(sendData);
     closeScopeModal();
     fetchScopes();
