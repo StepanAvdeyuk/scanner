@@ -337,8 +337,9 @@ const ScanAddPage: FC = () => {
             console.log('Navigating to details page');
         })
         .catch(error => {
+            console.dir(error);
             console.error('Ошибка при сохранении настроек:', error);
-            alert(`Ошибка при сохранении настроек: ${error.message}`)
+            alert(`Ошибка при сохранении настроек: ${JSON.stringify(error?.response?.data)}`)
         });
     };
 
