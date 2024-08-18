@@ -136,6 +136,8 @@ const ScanAddPage: FC = () => {
         }
     });
 
+    console.log(settingsData)
+
     const addIpField = () => setIps([...ips, '']);
     const addDomainField = () => setDomains([...domains, '']);
     
@@ -183,10 +185,10 @@ const ScanAddPage: FC = () => {
                     'Content-Type': 'application/json'
                 }
             });
-            setSettingsData(prevState => ({
-                ...prevState,
-                scan: response.data.scan_name
-            }));
+            // setSettingsData(prevState => ({
+            //     ...prevState,
+            //     scan: response.data.scan_name
+            // }));
         } catch (error) {
             console.error('Ошибка при создании скана:', error);
         }

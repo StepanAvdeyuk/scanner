@@ -1,5 +1,7 @@
 import { FC, useEffect, useState } from 'react';
+import React from 'react'
 import { Route, Routes, useNavigate, useParams } from 'react-router-dom';
+import axios from 'axios';
 
 import TopTabsMenu, { Tab } from '../../../../shared/ui-kit/HeaderMenu';
 import EventsPageCard from '../EventsPageCard';
@@ -10,10 +12,13 @@ import SetSettigsPageCard  from '../SetSettingsPageCard';
 import * as API from '../../../../API/api'; 
 import * as API_TYPES from '../../../../API/types';
 
+import { BASE_URL, API_TOKEN } from '../../../../API/consts';
+
 import css from './index.module.scss';
 
 const ScanCardDetails: FC = () => {
-  const { name } = useParams(); 
+  const { name } = useParams();
+  const [zeroReports, setZeroRepots] = React.useState(false);
 
   const settingsTab: Tab = {
     id: 'settings',
@@ -68,10 +73,30 @@ const ScanCardDetails: FC = () => {
       navigate(`settings/${reportId}`);
   }, [reportId]);
 
+
+  React.useEffect(() => {
+    axios.get(`${BASE_URL}/reports/${name}/`,  {
+        headers: {
+            'Authorization': `Token ${API_TOKEN}`
+        }
+      })
+      .then(res => {
+        if (res.data.length > 0) {
+          setZeroRepots(false);
+        } else {
+          setZeroRepots(true);
+          navigate(`change-settings/${reportId}`);
+        }
+      })
+      .catch((error) => {
+          console.error('Ошибка при получении настроек скана:', error);
+    });
+  }, [])
+
   return (
     <div className={css.scanCardWrapper}>
       <TopTabsMenu 
-        tabs={[settingsTab, inventoryTab, eventTab, changeSettings]} 
+        tabs={zeroReports ? [changeSettings] : [settingsTab, inventoryTab, eventTab, changeSettings]} 
         activeTabId={activeTab} 
         reportId={reportId}
         setReportIdCallback={setReportId}

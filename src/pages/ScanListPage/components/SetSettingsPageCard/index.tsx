@@ -10,29 +10,33 @@ import { Menu, Button } from 'antd';
 import { BASE_URL, API_TOKEN } from '../../../../API/consts';
 
 const SettingsPageCard: FC = () => {
-    const [scanSettings, setScanSettings] = useState(); 
-    const { reportId } = useParams();
+    const [scanSettings, setScanSettings] = useState();
+    const {name} = useParams();
+
 
     const [scopeGroups, setScopeGroups] = useState<string[]>([]);
     const [editableFields, setEditableFields] = React.useState({});
 
     useEffect(() => {
         const fetchScanSettings = async () => {
-            if (reportId === 'undefined') {
+            if (!name) {
                 return;
             }
-            try {
-                const scanResponse = await API.getReportSettings(Number(reportId));
-                setScanSettings(scanResponse);
-                setBaseSettingsData(scanResponse);
-            } 
-            catch (error) {
-                console.error('Ошибка при получении настроек скана:', error);
-            }
+            axios.get(`${BASE_URL}/settings/${name}/`,  {
+                headers: {
+                    'Authorization': `Token ${API_TOKEN}`
+                }
+              })
+              .then(res => {
+                setScanSettings(res.data);
+                setBaseSettingsData(res.data)
+              })
+              .catch((error) => {
+                  console.error('Ошибка при получении настроек скана:', error);
+            });
         };
-
         fetchScanSettings();
-    }, [reportId]);
+    }, [name]);
 
     const setBaseSettingsData = (data) => {
         setSettingsData({
