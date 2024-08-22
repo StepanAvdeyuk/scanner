@@ -1,4 +1,4 @@
-import { Button, Input, Select, Table, Card, List, Typography } from 'antd';
+import { Button, Input, Select, Table, Card, List, Typography, Dropdown, Menu } from 'antd';
 import { FC, useEffect, useState } from 'react';
 import { CloseOutlined } from '@ant-design/icons';
 import { useParams } from 'react-router-dom';
@@ -182,6 +182,25 @@ const EventsPageCard: FC = () => {
         }
     }
 
+    const groupedEvents = eventsData?.events.reduce((acc, event) => {
+        const eventName = event.info.name;
+        if (!acc[eventName]) {
+            acc[eventName] = [];
+        }
+        acc[eventName].push(event);
+        return acc;
+    }, {});
+
+    console.log('groupedEvents', groupedEvents)
+
+    const tableDataSource = groupedEvents && Object.keys(groupedEvents).map(name => {
+        return {
+            key: name,
+            name: name,
+            events: groupedEvents[name],
+        };
+    });
+
     const columns = [
         {
             title: 'Уязвимость',
@@ -190,8 +209,26 @@ const EventsPageCard: FC = () => {
         },
         {
             title: 'Критичность',
-            dataIndex: 'severity',
             key: 'severity',
+            render: (_, record) => {
+                const menu = (
+                    <Menu>
+                        {record.events.map(event => (
+                            <Menu.Item key={event.id} onClick={() => setDetailedEventById(event.id)}>
+                                {`${event.info.severity}. ID: ${event.id}`}
+                            </Menu.Item>
+                        ))}
+                    </Menu>
+                );
+    
+                return (
+                    <Dropdown overlay={menu}>
+                        <a href="#" onClick={(e) => e.preventDefault()}>
+                            (Кол-во: {record.events.length})
+                        </a>
+                    </Dropdown>
+                );
+            },
         },
         {
             title: 'Принять риск',
@@ -202,26 +239,6 @@ const EventsPageCard: FC = () => {
             ),
         }
     ];
-
-    const groupedEvents = eventsData?.events.reduce((acc, event) => {
-        const eventName = event.info.name;
-        if (!acc[eventName]) {
-            acc[eventName] = [];
-        }
-        acc[eventName].push(event);
-        return acc;
-    }, {});
-    console.log('groupedEvents', groupedEvents);
-    console.log('eventsData', eventsData);
-
-    const tableDataSource = eventsData?.events.map(event => {
-        return {
-            key: event.id,
-            id: event.id,
-            name: event.info.name,
-            severity: event.info.severity,
-        };
-    });
 
     return (
         <div>
@@ -292,12 +309,12 @@ const EventsPageCard: FC = () => {
                                     dataSource={tableDataSource}
                                     columns={columns}
                                     pagination={false}
-                                    onRow={(record) => {
-                                        return {
-                                            onClick: () => { setDetailedEventById(record.id) },
-                                        };
-                                    }}
-                                    // TODOD pass this style to rows only
+                                    rowKey="key"
+                                    // onRow={(record) => {
+                                    //     return {
+                                    //         onClick: () => { setDetailedEventById(record.id) },
+                                    //     };
+                                    // }}
                                     style={{ cursor: 'pointer' }}
                                 />
                             </div>
