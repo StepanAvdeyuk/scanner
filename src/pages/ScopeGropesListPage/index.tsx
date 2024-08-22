@@ -6,16 +6,22 @@ import css from './index.module.scss';
 import { BASE_URL, API_TOKEN } from '../../API/consts';
 import EventModal from './EventModal';
 import ScopeGroupModal from './ScopeGroupModal';
+import ScopeGroupModalList from './ScopeGroupModalList';
 
 
 const ScopeGropesListPage: FC = () => {
+
   const [isOpen, setIsOpen] = useState(false);
+  const [isScopeOpenList, setIsScopeOpenList] = useState(false);
   const [isScopeOpen, setIsScopeOpen] = useState(false);
   const [scopes, setScopes] = useState([]);
   const [openedScope, setOpenedScope] = useState<number|null>(null);
 
   const openScopeModal = () => setIsScopeOpen(true);
   const closeScopeModal = () => setIsScopeOpen(false);
+
+  const openScopeModalList = () => setIsScopeOpenList(true);
+  const closeScopeModalList = () => setIsScopeOpenList(false);
 
   const handleSave = (data) => {
     const sendData = {
@@ -28,7 +34,6 @@ const ScopeGropesListPage: FC = () => {
     closeScopeModal();
     fetchScopes();
   };
-
 
   const fetchScopes = async () => {
     try {
@@ -67,7 +72,7 @@ const ScopeGropesListPage: FC = () => {
     setOpenedScope(id);
   };
   const closeModal = () => {
-    setIsOpen(false)
+    setIsOpen(false);
     setOpenedScope(null);
   };
 
@@ -105,7 +110,15 @@ const ScopeGropesListPage: FC = () => {
             onClick={openScopeModal}>
             Создать Scope группу
           </Button>
+          <Button 
+            size="medium" 
+            style={{"marginLeft": "10px"}}
+            rounded={true}
+            onClick={openScopeModalList}>
+            Создать Scope группу (списком)
+          </Button>
           <ScopeGroupModal isOpen={isScopeOpen} onClose={closeScopeModal} onSave={handleSave} />
+          <ScopeGroupModalList isOpen={isScopeOpenList} onClose={closeScopeModalList} onSave={handleSave} />
           {/* <Button 
             size="medium" 
             rounded={true}
