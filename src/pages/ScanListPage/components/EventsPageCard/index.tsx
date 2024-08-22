@@ -203,6 +203,17 @@ const EventsPageCard: FC = () => {
         }
     ];
 
+    const groupedEvents = eventsData?.events.reduce((acc, event) => {
+        const eventName = event.info.name;
+        if (!acc[eventName]) {
+            acc[eventName] = [];
+        }
+        acc[eventName].push(event);
+        return acc;
+    }, {});
+    console.log('groupedEvents', groupedEvents);
+    console.log('eventsData', eventsData);
+
     const tableDataSource = eventsData?.events.map(event => {
         return {
             key: event.id,

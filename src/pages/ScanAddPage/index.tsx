@@ -177,26 +177,16 @@ const ScanAddPage: FC = () => {
     };
 
     const createScan = async (name: string) => {
-        try {
-            const response = await axios.post('http://109.172.115.106:8000/api/v1/scan/create/', {name}, {
-                headers: {
-                    'Authorization': `Token ${API_TOKEN}`,
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                }
-            });
-            // setSettingsData(prevState => ({
-            //     ...prevState,
-            //     scan: response.data.scan_name
-            // }));
-        } catch (error) {
-            console.error('Ошибка при создании скана:', error);
-        }
+        axios.post('http://109.172.115.106:8000/api/v1/scan/create/', {name}, {
+            headers: {
+                'Authorization': `Token ${API_TOKEN}`,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        }).then(() => handleSaveAll()).catch((e) => console.error('Ошибка при создании скана:', e));
     };
 
     const handleAddScanClick = async () => {
-        // await createScan();
-        // await fetchSettingsData();
         setIsMainBlockVisible(true);
     };
 
@@ -347,7 +337,6 @@ const ScanAddPage: FC = () => {
 
     const handleSaveAllButton = () =>{
         createScan(settingsData.scan);
-        handleSaveAll()
     }
 
     const scopeGroupMenu = (

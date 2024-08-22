@@ -101,7 +101,7 @@ const ScanCardDetails: FC = () => {
         reportId={reportId}
         setReportIdCallback={setReportId}
       />
-      { reportId ? undefined : ('Загрузка...') }
+      {/* { reportId ? undefined : ('Загрузка...') } */}
       <Routes>
         <Route path='settings/:reportId' element={<SettigsPageCard />} />
         <Route path='inventory/:reportId' element={<InventoryPageCard />} />
