@@ -96,7 +96,7 @@ const SettingsPageCard: FC = () => {
                     template_condition: data.nuclei_settings.template_filters.template_condition || ['']
                 },
                 template_sources: {
-                    templates: data.nuclei_settings.template_sources.template || ['']
+                    templates: data.nuclei_settings.template_sources.templates || [''] 
                 },
                 headers: data.nuclei_settings.headers || [''],
                 follow_redirects: data.nuclei_settings.follow_redirects || false,
