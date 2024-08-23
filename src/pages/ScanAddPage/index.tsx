@@ -181,7 +181,7 @@ const ScanAddPage: FC = () => {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             }
-        }).then(() => handleSaveAll()).catch((e) => console.error('Ошибка при создании скана:', e));
+        }).then(() => handleSaveAll()).catch((e) => {console.error('Ошибка при создании скана:', e); handleSaveAll()});
     };
 
     const handleAddScanClick = async () => {
