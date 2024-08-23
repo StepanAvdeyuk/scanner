@@ -60,6 +60,8 @@ const EventsPageCard: FC = () => {
     const [eventsData, setEventsData] = useState<EventsData | undefined>();
     const [detailedEvent, setDetailedEvent] = useState<Event | undefined>();
 
+    const [activeId, setActiveId] = useState(null);
+
     const [error, setError] = useState<string | null>(null);
     const [filters, setFilters] = useState({
         severity: [],
@@ -156,6 +158,7 @@ const EventsPageCard: FC = () => {
     
 
     const setDetailedEventById = (id: number) => {
+        setActiveId(id);
         const event = eventsData?.events.find(event => event.id === id);
         setDetailedEvent(event);
     }
@@ -239,24 +242,27 @@ const EventsPageCard: FC = () => {
                             showArrow={isExpandable}
                         >
                             {isExpandable &&
-                                record.events.map(event => (
-                                    <div key={event.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '24px', marginBottom: '8px' }}>
-                                        <span onClick={() => setDetailedEventById(event.id)}>
-                                            {`${event.info.name} ID:${event.id} Host: ${event.host} (${event.info.severity})`}
-                                        </span>
-                                        <Button
-                                            danger
-                                            size="small"
-                                            shape="circle"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                acceptRiskClick(event.id);
-                                            }}
-                                        >
-                                            ✓
-                                        </Button>
-                                    </div>
-                                ))}
+                                record.events.map(event => {
+                                    const spanStyle = (activeId === event.id) ? {color: '#477ec2'} : {};
+                                    return (
+                                        <div key={event.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '24px', marginBottom: '8px' }}>
+                                            <span style={spanStyle} onClick={() => setDetailedEventById(event.id)}>
+                                                {`${event.info.name} ID:${event.id} Host: ${event.host} (${event.info.severity})`}
+                                            </span>
+                                            <Button
+                                                danger
+                                                size="small"
+                                                shape="circle"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    acceptRiskClick(event.id);
+                                                }}
+                                            >
+                                                ✓
+                                            </Button>
+                                        </div>
+                                    )
+                                })}
                         </Panel>
                     </Collapse>
                 );
