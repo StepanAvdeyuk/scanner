@@ -189,9 +189,7 @@ const EventsPageCard: FC = () => {
         }
         acc[eventName].push(event);
         return acc;
-    }, {});
-
-    console.log('groupedEvents', groupedEvents)
+    }, {}); 
 
     const tableDataSource = groupedEvents && Object.keys(groupedEvents).map(name => {
         return {
@@ -204,39 +202,58 @@ const EventsPageCard: FC = () => {
     const columns = [
         {
             title: 'Уязвимость',
-            dataIndex: 'name',
             key: 'name',
-        },
-        {
-            title: 'Критичность',
-            key: 'severity',
             render: (_, record) => {
+                const isExpandable = record.events.length > 1;
+
                 const menu = (
                     <Menu>
-                        {record.events.map(event => (
-                            <Menu.Item key={event.id} onClick={() => setDetailedEventById(event.id)}>
-                                {`${event.info.severity}. ID: ${event.id}`}
+                        {record.events.map((event) => (
+                            <Menu.Item key={event.id}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <span onClick={() => setDetailedEventById(event.id)}>
+                                        {`${event.info.name} ID:${event.id} Host: ${event.host} (${event.info.severity})`}
+                                    </span>
+                                    <Button
+                                        danger
+                                        size="small"
+                                        shape="circle"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            acceptRiskClick(event.id);
+                                        }}
+                                    >
+                                        ✓
+                                    </Button>
+                                </div>
                             </Menu.Item>
                         ))}
                     </Menu>
                 );
-    
+
                 return (
-                    <Dropdown overlay={menu}>
-                        <a href="#" onClick={(e) => e.preventDefault()}>
-                            (Кол-во: {record.events.length})
+                    <Dropdown overlay={menu} trigger={isExpandable ? ['click'] : []}>
+                        <a href="#" onClick={(e) => e.preventDefault()} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span onClick={() => {if (!isExpandable) {setDetailedEventById(record.events[0].id)}}}>
+                                {record.name} {isExpandable ? `(Кол-во: ${record.events.length})` : `(${record.events[0].info.severity})`}
+                            </span>
+                            {!isExpandable && (
+                                <Button
+                                    danger
+                                    size="small"
+                                    shape="circle"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        acceptRiskClick(record.events[0].id);
+                                    }}
+                                >
+                                    ✓
+                                </Button>
+                            )}
                         </a>
                     </Dropdown>
                 );
             },
-        },
-        {
-            title: 'Принять риск',
-            dataIndex: 'accept_risk',
-            key: 'accept_risk',
-            render: (_: any, record: any) => (
-                <Button danger size='small' shape="circle" onClick={(e) => {e.stopPropagation();acceptRiskClick(record.id)}}>✓</Button>
-            ),
         }
     ];
 
