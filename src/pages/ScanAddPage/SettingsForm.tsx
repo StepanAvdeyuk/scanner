@@ -9,7 +9,7 @@ import css from './index.module.scss';
 
 const { Item: FormItem, List: FormList } = Form;
 
-const SettingsForm = ({ settingsData, handleSettingsChange, scopeGroupMenu, removeGroup, showStatus, editableFields, setEditableFields }) => {
+const SettingsForm = ({ settingsData, handleSettingsChange, scopeGroupMenu, templateMenu, removeTemplateItem, removeGroup, showStatus, editableFields, setEditableFields }) => {
 
 
     const [scanStatus, setScanStatus] = React.useState('');
@@ -44,7 +44,7 @@ const SettingsForm = ({ settingsData, handleSettingsChange, scopeGroupMenu, remo
         <Form layout="vertical">
             {showStatus && <Title level={5}>Статус скана: {scanStatus || 'Не известен'}</Title>}
             <Title level={3}>Основные настройки</Title>
-            <FormItem className={css.formItem} label="Scan">
+            <FormItem className={css.formItem} label="Scan Name">
                 <Space>
                     <Input
                         value={settingsData.scan}
@@ -83,6 +83,8 @@ const SettingsForm = ({ settingsData, handleSettingsChange, scopeGroupMenu, remo
                     ))}
                 </div>
             </FormItem>
+
+            <Title level={5}>Nmap settings</Title>
 
             <FormItem className={css.formItem} label="Nmap Min Rate">
                 <Space>
@@ -158,6 +160,10 @@ const SettingsForm = ({ settingsData, handleSettingsChange, scopeGroupMenu, remo
                 </Space>
             </FormItem>
 
+            <Title level={5}>Nuclei settings</Title>
+
+            <Title level={5}>Concurrency</Title>
+
             <FormItem className={css.formItem} label="Template Payload Concurrency">
                 <Space>
                     <Input
@@ -175,6 +181,8 @@ const SettingsForm = ({ settingsData, handleSettingsChange, scopeGroupMenu, remo
                     />
                 </Space>
             </FormItem>
+
+            <Title level={5}>Interactsh options</Title>
 
             <FormItem className={css.formItem} label="Server URL">
                 <Space>
@@ -240,6 +248,8 @@ const SettingsForm = ({ settingsData, handleSettingsChange, scopeGroupMenu, remo
                     })}
                 />
             </FormItem>
+
+            <Title level={5}>Network config</Title>
 
             <FormItem label="Disable Max Host Err">
                 <Checkbox
@@ -385,6 +395,8 @@ const SettingsForm = ({ settingsData, handleSettingsChange, scopeGroupMenu, remo
                 isDisabled={!editableFields.track_error}
                 setIsDisabled={() => handleToggleEdit('track_error')}
             />
+
+            <Title level={5}>Template filters</Title>
 
 
             <FormItem className={css.formItem} label="Severity">
@@ -535,6 +547,34 @@ const SettingsForm = ({ settingsData, handleSettingsChange, scopeGroupMenu, remo
                 isDisabled={!editableFields.template_condition}
                 setIsDisabled={() => handleToggleEdit('template_condition')}
             />
+
+            <Title level={5}>Template sources</Title>
+
+            <FormItem label="Templates">
+                <Dropdown overlay={templateMenu}>
+                    <a onClick={(e) => e.preventDefault()}>
+                        <Space>
+                            Выберите шаблон
+                            <DownOutlined />
+                        </Space>
+                    </a>
+                </Dropdown>
+                <div className={css.dropdownSelectedBlock}>
+                    {settingsData.nuclei_settings.template_sources.templates.map((group, index) => (
+                        <div key={index}>
+                            {group}
+                            {index > 0 && (
+                                <Button
+                                    type="danger"
+                                    size="small"
+                                    icon={<MinusCircleOutlined />}
+                                    onClick={() => removeTemplateItem(index)}
+                                />
+                            )}
+                        </div>
+                    ))}
+                </div>
+            </FormItem>
 
             <DynamicFieldList
                 label="Templates"

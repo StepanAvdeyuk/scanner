@@ -16,6 +16,17 @@ const SettingsPageCard: FC = () => {
 
     const [scopeGroups, setScopeGroups] = useState<string[]>([]);
     const [editableFields, setEditableFields] = React.useState({});
+    const [templates, setTemplates] = useState<string[]>([]);
+
+    React.useEffect(() => {
+        axios.get(`${BASE_URL}/templates/upload/`, {
+            headers: {
+                'Authorization': `Token ${API_TOKEN}`
+            }
+        })
+        .then((res) => setTemplates(res.data.templates.filter(item => item.name).map(item => item.name)))
+        .catch((e) => console.error('Ошибка получения шаблонов:', e));
+    }, [])
 
     useEffect(() => {
         const fetchScanSettings = async () => {
@@ -268,6 +279,40 @@ const SettingsPageCard: FC = () => {
         }));
     };
 
+    const handleSelectTemplate = (template: string) => {
+        setSettingsData(prevState => ({
+            ...prevState,
+            nuclei_settings: {
+                ...prevState.nuclei_settings,
+                template_sources: {
+                    ...prevState.template_sources,
+                    templates: [...prevState.nuclei_settings.template_sources.templates, template]
+                }
+            }
+        }));
+    };
+  
+    const templateMenu = (
+        <Menu>
+            {templates && templates.map((template, index) => (
+                <Menu.Item key={index} onClick={() => handleSelectTemplate(template)}>{template}</Menu.Item>
+            ))}
+        </Menu>
+    );
+    
+    const removeTemplateItem = (index) => {
+        setSettingsData(prevState => ({
+            ...prevState,
+            nuclei_settings: {
+                ...prevState.nuclei_settings,
+                template_sources: {
+                    ...prevState.template_sources,
+                    templates: prevState.nuclei_settings.template_sources.templates.filter((_, i) => i !== index)
+                }
+            }
+        }));
+    };
+
     return (
         <div className={css.settingsPageWrapper} style={{"padding" : "20px"}}>
             <div className={css2.scanAddPageForm}>
@@ -275,6 +320,8 @@ const SettingsPageCard: FC = () => {
                 settingsData={settingsData} 
                 handleSettingsChange={handleSettingsChange} 
                 scopeGroupMenu={scopeGroupMenu} 
+                templateMenu={templateMenu} 
+                removeTemplateItem={removeTemplateItem}
                 removeGroup={removeGroup}
                 showStatus={true}
                 editableFields={editableFields}

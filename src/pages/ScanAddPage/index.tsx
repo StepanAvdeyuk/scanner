@@ -37,15 +37,13 @@ const ScanAddPage: FC = () => {
     const navigate = useNavigate()
 
     React.useEffect(() => {
-        try {
-            const response = axios.get(`${BASE_URL}/templates/upload/`, {
-                headers: {
-                    'Authorization': `Token ${API_TOKEN}`
-                }
-            }).then((res) => console.log(res));
-        } catch (error) {
-            console.error('Ошибка получения Scope групп:', error);
-        }
+        axios.get(`${BASE_URL}/templates/upload/`, {
+            headers: {
+                'Authorization': `Token ${API_TOKEN}`
+            }
+        })
+        .then((res) => setTemplates(res.data.templates.filter(item => item.name).map(item => item.name)))
+        .catch((e) => console.error('Ошибка получения шаблонов:', e));
     }, [])
 
     const cleanSettingsData = (obj: any): any => {
@@ -165,7 +163,7 @@ const ScanAddPage: FC = () => {
 
     const fetchSettingsData = async () => {
         try {
-            const response = await axios.get('http://109.172.115.106:8000/api/v1/settings/', {
+            const response = await axios.get(`${BASE_URL}/settings/`, {
                 headers: {
                     'Authorization': `Token ${API_TOKEN}`
                 }
@@ -177,7 +175,7 @@ const ScanAddPage: FC = () => {
     };
 
     const createScan = async (name: string) => {
-        axios.post('http://109.172.115.106:8000/api/v1/scan/create/', {name}, {
+        axios.post(`${BASE_URL}/scan/create/`, {name}, {
             headers: {
                 'Authorization': `Token ${API_TOKEN}`,
                 'Accept': 'application/json',
@@ -212,7 +210,7 @@ const ScanAddPage: FC = () => {
         setSaveStatus('Сохранить');
 
         try {
-            const response = await axios.post('http://109.172.115.106:8000/api/v1/scope/', {
+            const response = await axios.post(`${BASE_URL}/scope/`, {
                 name: name,
                 ips: ips.map(ip => ({ ip, domains: [] })),
                 domains: domains.map(domain => ({ domain, ips: [] })),
@@ -255,23 +253,13 @@ const ScanAddPage: FC = () => {
         formData.append('file', file);
 
         try {
-            const response = await axios.post('http://109.172.115.106:8000/api/v1/templates/upload/', formData, {
+            const response = await axios.post(`${BASE_URL}/templates/upload/`, formData, {
                 headers: {
                     'Authorization': `Token ${API_TOKEN}`,
                     'Accept': 'application/json',
                     'Content-Type': 'multipart/form-data'
                 }
             });
-
-            // const newTemplate = response.data.name;
-            // setTemplates([...templates, newTemplate]);
-            // setSettingsData(prevState => ({
-            //     ...prevState,
-            //     template_sources: {
-            //         ...prevState.template_sources,
-            //         templates: [...prevState.template_sources.templates, newTemplate]
-            //     }
-            // }));
             setTemplateSaveStatus('Сохранено');
             toggleModal('template', false);
         } catch (error) {
@@ -307,7 +295,7 @@ const ScanAddPage: FC = () => {
     };
 
     const handleSaveAll = () => {
-        axios.post('http://109.172.115.106:8000/api/v1/settings/', cleanSettingsData(setDisabledSettingsData(settingsData)), {
+        axios.post(`${BASE_URL}/settings/`, cleanSettingsData(setDisabledSettingsData(settingsData)), {
             headers: {
                 'Authorization': `Token ${API_TOKEN}`,
                 'Accept': 'application/json',
@@ -344,9 +332,14 @@ const ScanAddPage: FC = () => {
             {scopeGroups && scopeGroups.map((group, index) => (
                 <Menu.Item key={index} onClick={() => handleSelectGroup(group)}>{group}</Menu.Item>
             ))}
-            {/* <Menu.Item key="create" onClick={() => toggleModal('group', true)}>
-                Создать
-            </Menu.Item> */}
+        </Menu>
+    );
+
+    const templateMenu = (
+        <Menu>
+            {templates && templates.map((template, index) => (
+                <Menu.Item key={index} onClick={() => handleSelectTemplate(template)}>{template}</Menu.Item>
+            ))}
         </Menu>
     );
 
@@ -363,23 +356,16 @@ const ScanAddPage: FC = () => {
         });
     };
 
-    const templateMenu = (
-        <Menu>
-            {templates.map((template, index) => (
-                <Menu.Item key={index} onClick={() => handleSelectTemplate(template)}>{template}</Menu.Item>
-            ))}
-            <Menu.Item key="create" onClick={() => toggleModal('template', true)}>
-                Создать
-            </Menu.Item>
-        </Menu>
-    );
 
     const handleSelectTemplate = (template: string) => {
         setSettingsData(prevState => ({
             ...prevState,
-            template_sources: {
-                ...prevState.template_sources,
-                templates: [...prevState.template_sources.templates, template]
+            nuclei_settings: {
+                ...prevState.nuclei_settings,
+                template_sources: {
+                    ...prevState.template_sources,
+                    templates: [...prevState.nuclei_settings.template_sources.templates, template]
+                }
             }
         }));
     };
@@ -388,6 +374,19 @@ const ScanAddPage: FC = () => {
         setSettingsData(prevState => ({
             ...prevState,
             scope_groups: prevState.scope_groups.filter((_, i) => i !== index)
+        }));
+    };
+
+    const removeTemplateItem = (index) => {
+        setSettingsData(prevState => ({
+            ...prevState,
+            nuclei_settings: {
+                ...prevState.nuclei_settings,
+                template_sources: {
+                    ...prevState.template_sources,
+                    templates: prevState.nuclei_settings.template_sources.templates.filter((_, i) => i !== index)
+                }
+            }
         }));
     };
 
@@ -439,7 +438,7 @@ const ScanAddPage: FC = () => {
                     template_condition: editableFields.template_condition ? data.nuclei_settings.template_filters.template_condition : null
                 },
                 template_sources: {
-                    templates: editableFields.templates ? data.nuclei_settings.template_sources.template : null
+                    templates: data.nuclei_settings.template_sources.templates
                 },
                 headers: editableFields.headers ? data.nuclei_settings.headers : null,
                 follow_redirects: data.nuclei_settings.follow_redirects,
@@ -461,7 +460,9 @@ const ScanAddPage: FC = () => {
                     <SettingsForm 
                         settingsData={settingsData} 
                         handleSettingsChange={handleSettingsChange} 
-                        scopeGroupMenu={scopeGroupMenu} 
+                        scopeGroupMenu={scopeGroupMenu}
+                        templateMenu={templateMenu} 
+                        removeTemplateItem={removeTemplateItem}
                         removeGroup={removeGroup}
                         showStatus={false}
                         editableFields={editableFields}
