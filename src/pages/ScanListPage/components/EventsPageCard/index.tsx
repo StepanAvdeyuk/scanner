@@ -1,4 +1,4 @@
-import { Button, Input, Select, Table, Card, List, Typography, Dropdown, Menu } from 'antd';
+import { Button, Input, Select, Collapse, Table, Card, List, Typography, Dropdown, Menu } from 'antd';
 import { FC, useEffect, useState } from 'react';
 import { CloseOutlined } from '@ant-design/icons';
 import { useParams } from 'react-router-dom';
@@ -13,6 +13,7 @@ import EventChart from './components/EventChart';
 import img from '../../../../shared/icons/arrow_down/down-arrow.svg';
 
 const { Option } = Select;
+const { Panel } = Collapse;
 
 interface EventInfo {
     name: string;
@@ -198,64 +199,71 @@ const EventsPageCard: FC = () => {
             events: groupedEvents[name],
         };
     });
-
+    
     const columns = [
         {
             title: 'Уязвимость',
             key: 'name',
             render: (_, record) => {
                 const isExpandable = record.events.length > 1;
-
-                const menu = (
-                    <Menu>
-                        {record.events.map((event) => (
-                            <Menu.Item key={event.id}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <span onClick={() => setDetailedEventById(event.id)}>
-                                        {`${event.info.name} ID:${event.id} Host: ${event.host} (${event.info.severity})`}
-                                    </span>
-                                    <Button
-                                        danger
-                                        size="small"
-                                        shape="circle"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            acceptRiskClick(event.id);
-                                        }}
-                                    >
-                                        ✓
-                                    </Button>
-                                </div>
-                            </Menu.Item>
-                        ))}
-                    </Menu>
-                );
-
+                const defaultActiveKey = isExpandable ? null : ['1']
                 return (
-                    <Dropdown overlay={menu} trigger={isExpandable ? ['click'] : []}>
-                        <a href="#" onClick={(e) => e.preventDefault()} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <span onClick={() => {if (!isExpandable) {setDetailedEventById(record.events[0].id)}}}>
-                                {record.name} {isExpandable ? `(Кол-во: ${record.events.length})` : `(${record.events[0].info.severity})`}
-                            </span>
-                            {!isExpandable && (
-                                <Button
-                                    danger
-                                    size="small"
-                                    shape="circle"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        acceptRiskClick(record.events[0].id);
-                                    }}
-                                >
-                                    ✓
-                                </Button>
-                            )}
-                        </a>
-                    </Dropdown>
+                    <Collapse
+                        expandIconPosition="end"
+                        bordered={false}
+                        defaultActiveKey={defaultActiveKey} 
+                        size='small'
+                        collapsible={!isExpandable && 'icon'}
+                    >
+                        <Panel onClick={(e) => {e.stopPropagation(); if (!isExpandable) {setDetailedEventById(record.events[0].id)}}}
+                            header={
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div><span>{record.name}</span>
+                                    <span>{isExpandable ? ` (Кол-во: ${record.events.length})` : ` (${record.events[0].info.severity})`}</span></div>
+                                    {!isExpandable && (
+                                        <Button
+                                            danger
+                                            size="small"
+                                            shape="circle"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                acceptRiskClick(record.events[0].id);
+                                            }}
+                                        >
+                                            ✓
+                                        </Button>
+                                    )}
+                                </div>
+                            }
+                            key="1"
+                            showArrow={isExpandable}
+                        >
+                            {isExpandable &&
+                                record.events.map(event => (
+                                    <div key={event.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '24px', marginBottom: '8px' }}>
+                                        <span onClick={() => setDetailedEventById(event.id)}>
+                                            {`${event.info.name} ID:${event.id} Host: ${event.host} (${event.info.severity})`}
+                                        </span>
+                                        <Button
+                                            danger
+                                            size="small"
+                                            shape="circle"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                acceptRiskClick(event.id);
+                                            }}
+                                        >
+                                            ✓
+                                        </Button>
+                                    </div>
+                                ))}
+                        </Panel>
+                    </Collapse>
                 );
             },
         }
     ];
+
 
     return (
         <div>
