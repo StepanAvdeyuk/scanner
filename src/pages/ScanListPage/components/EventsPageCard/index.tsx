@@ -210,6 +210,7 @@ const EventsPageCard: FC = () => {
             render: (_, record) => {
                 const isExpandable = record.events.length > 1;
                 const defaultActiveKey = isExpandable ? null : ['1']
+                const activeStyle = (!isExpandable && (record.events[0].id == activeId)) ? {color: '#477ec2'} : {};
                 return (
                     <Collapse
                         expandIconPosition="end"
@@ -221,7 +222,7 @@ const EventsPageCard: FC = () => {
                         <Panel onClick={(e) => {e.stopPropagation(); if (!isExpandable) {setDetailedEventById(record.events[0].id)}}}
                             header={
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <div><span>{record.name}</span>
+                                    <div style={activeStyle}><span>{record.name}</span>
                                     <span>{isExpandable ? ` (Кол-во: ${record.events.length})` : ` (${record.events[0].info.severity})`}</span></div>
                                     {!isExpandable && (
                                         <Button
