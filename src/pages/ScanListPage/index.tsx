@@ -69,7 +69,7 @@ const ScanListPage: FC = () => {
               onClick={() => handleCardClick(card.name)}
             >
               <span>{card.name}</span>
-              <Button size="medium" icon={<PlayCircleOutlined />} rounded={true} className={css.startButton} onClick={(e) => {e.stopPropagation();handleStartClick(card.name)}}></Button>
+              {/* <Button size="medium" icon={<PlayCircleOutlined />} rounded={true} className={css.startButton} onClick={(e) => {e.stopPropagation();handleStartClick(card.name)}}></Button> */}
             </Card>
           ))}
         </div>

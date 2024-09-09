@@ -3,7 +3,7 @@ import { DownOutlined } from '@ant-design/icons';
 import { Dropdown, Menu, Space, Button } from 'antd';
 import axios from 'axios';
 import React, { FC, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { API_TOKEN, BASE_URL } from '../../API/consts';
 import { MinusCircleOutlined } from '@ant-design/icons';
 import SharedButton from '../../shared/ui-kit/Button';
@@ -133,8 +133,6 @@ const ScanAddPage: FC = () => {
             dialer_keep_alive: '',
         }
     });
-
-    console.log(settingsData)
 
     const addIpField = () => setIps([...ips, '']);
     const addDomainField = () => setDomains([...domains, '']);
@@ -455,6 +453,7 @@ const ScanAddPage: FC = () => {
 
     return (
         <div className={css.scanAddPageWrapper}>
+            <Link to='/'><Button>На главную</Button></Link>
             {isMainBlockVisible ? (
                 <div className={css.scanAddPageForm}>
                     <SettingsForm 

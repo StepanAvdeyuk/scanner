@@ -20,6 +20,13 @@ const ScanCardDetails: FC = () => {
   const { name } = useParams();
   const [zeroReports, setZeroRepots] = React.useState(false);
 
+  const homeTab: Tab = {
+    id: 'home',
+    label: 'Home',
+    url: `/`,
+    onSelectCallback: () => navigate('/')
+  };
+
   const settingsTab: Tab = {
     id: 'settings',
     label: 'Настройки',
@@ -43,7 +50,7 @@ const ScanCardDetails: FC = () => {
 
   const changeSettings: Tab = {
     id: 'changeSettings',
-    label: 'Редактировать',
+    label: 'Управление',
     url: `/details/${name}/change-settings`,
     onSelectCallback: () => setActiveTab('changeSettings')
   };
@@ -96,7 +103,7 @@ const ScanCardDetails: FC = () => {
   return (
     <div className={css.scanCardWrapper}>
       <TopTabsMenu 
-        tabs={zeroReports ? [changeSettings] : [settingsTab, inventoryTab, eventTab, changeSettings]} 
+        tabs={zeroReports ? [changeSettings] : [homeTab, settingsTab, inventoryTab, eventTab, changeSettings]} 
         activeTabId={activeTab} 
         reportId={reportId}
         setReportIdCallback={setReportId}

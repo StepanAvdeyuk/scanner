@@ -1,7 +1,8 @@
 import React from 'react';
 import { Form, Input, Button, Checkbox, Space, Dropdown, Menu, Typography } from 'antd';
 import axios from 'axios';
-const { Title } = Typography;
+const { Title, Text } = Typography;
+import { PlayCircleOutlined, PauseCircleOutlined } from '@ant-design/icons';
 import { BASE_URL, API_TOKEN } from '../../API/consts';
 import { MinusCircleOutlined, DownOutlined, EditOutlined } from '@ant-design/icons';
 import DynamicFieldList from './DynamicFieldList';
@@ -13,6 +14,7 @@ const SettingsForm = ({ settingsData, handleSettingsChange, scopeGroupMenu, temp
 
 
     const [scanStatus, setScanStatus] = React.useState('');
+    const [isRunning, setIsRunning] = React.useState(false);
 
     const handleToggleEdit = (key) => {
         setEditableFields(prev => {
@@ -26,22 +28,75 @@ const SettingsForm = ({ settingsData, handleSettingsChange, scopeGroupMenu, temp
         });
     };
 
-    React.useEffect(() => {
+    const setLocalScanStatus = (res) => {
+        if (typeof res.data.info === 'string') {
+            setScanStatus(res.data.info);
+            setIsRunning(false);
+        } else {
+            let statusString = '';
+            if (res.data.info?.status) {
+                statusString = statusString + `${res.data.info?.status}`;
+                if (res.data.info?.status == "Running") {
+                    setIsRunning(true);
+                }
+            }
+            if (res.data.info?.status != "Finished") {
+                if (res.data.info?.extendedStatistics?.percent) {
+                    statusString = statusString + ` Процент выполнения: ${res.data.info?.extendedStatistics?.percent}%`;
+                } else {
+                    statusString = statusString + ` проводится OSINT`;
+                }
+            }
+            setScanStatus(statusString);
+        }
+    }
+
+    const getScanStatus = () => {
         if (settingsData.scan && showStatus) {
             axios.get(`${BASE_URL}/scan/status/${settingsData.scan}/`,  {
                 headers: {
                     'Authorization': `Token ${API_TOKEN}`
                 }
               })
-              .then(res => setScanStatus(res.data.info))
+              .then(res => setLocalScanStatus(res))
               .catch((error) => {
                   console.error('Ошибка:', error);
               });
-        }
-    }, [])
+        } 
+    }
+
+    const stopScan = (name) => {
+        axios.get(`${BASE_URL}/scan/stop/${name}/`, {
+            headers: {
+                'Authorization': `Token ${API_TOKEN}`
+            }
+          })
+          .catch((error) => {
+              console.error('Ошибка:', error);
+          });
+    }
+
+    React.useEffect(() => {
+        getScanStatus();
+    }, [settingsData])
+
+
+    const startScan = (name) => {
+        axios.post(`${BASE_URL}/scan/start/${name}/`, {}, {
+              headers: {
+                  'Authorization': `Token ${API_TOKEN}`,
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+              }
+        }).then(() => getScanStatus()).catch(e => console.error('Ошибка запуска скана', e)) 
+    };
 
     return (
         <Form layout="vertical">
+            {showStatus && <div className={css.startButton}>
+                <div><p>Запустить скан</p><Button size="medium" disabled={isRunning} icon={<PlayCircleOutlined />} rounded={true} onClick={(e) => {e.stopPropagation(); startScan(settingsData.scan)}}></Button></div>
+                <div><p>Остановить скан</p><Button size="medium" disabled={!isRunning} icon={<PauseCircleOutlined />} rounded={true} onClick={(e) => {e.stopPropagation(); stopScan(settingsData.scan)}}></Button></div>
+                </div>}
             {showStatus && <Title level={5}>Статус скана: {scanStatus || 'Не известен'}</Title>}
             <Title level={3}>Основные настройки</Title>
             <FormItem className={css.formItem} label="Scan Name">
@@ -563,7 +618,7 @@ const SettingsForm = ({ settingsData, handleSettingsChange, scopeGroupMenu, temp
                     {settingsData.nuclei_settings.template_sources.templates.map((group, index) => (
                         <div key={index}>
                             {group}
-                            {index > 0 && (
+                            {index >= 0 && (
                                 <Button
                                     type="danger"
                                     size="small"

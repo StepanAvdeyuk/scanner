@@ -3,6 +3,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { Modal, Card, List, Typography, Button } from 'antd';
 import SharedCard from '../../shared/ui-kit/Card';
 import css from './index.module.scss';
+import { Link } from 'react-router-dom';
 import { BASE_URL, API_TOKEN } from '../../API/consts';
 import EventModal from './EventModal';
 import ScopeGroupModal from './ScopeGroupModal';
@@ -78,6 +79,7 @@ const ScopeGropesListPage: FC = () => {
 
   return (
     <div className={css.scopeGropesListPageWrapper}>
+      <Link to='/'><Button>На главную</Button></Link>
         <div>
         <span className={css.scopeGropesListTitle}>Список скоп групп</span>
           <div className={css.prevScopeBlock}>

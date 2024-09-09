@@ -112,3 +112,23 @@
         width: 100%;
     }
 }
+
+.startButton {
+    display: flex;
+    div {
+        display: flex;
+        align-items: center;
+        &:first-of-type {
+            margin-right: 16px;
+        }
+    }
+    p {
+        font-size: 16px;
+        color:rgba(0, 0, 0, 0.88);
+        margin-right: 10px;
+        &:hover {
+            cursor: default;
+            color: rgba(0, 0, 0, 0.88);
+        }
+    }
+}
