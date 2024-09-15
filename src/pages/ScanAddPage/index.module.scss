@@ -132,3 +132,18 @@
         }
     }
 }
+
+.progressBar {
+    height: 10px;
+    width: 100%;
+    background-color: #dcecff;
+    margin: 0 auto;
+    position: relative;
+    div {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 10px;
+        background-color: #1677ff;
+    }
+}

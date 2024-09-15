@@ -16,6 +16,11 @@ const SettingsForm = ({ settingsData, handleSettingsChange, scopeGroupMenu, temp
     const [scanStatus, setScanStatus] = React.useState('');
     const [isRunning, setIsRunning] = React.useState(false);
 
+    const [duration, setDuration] = React.useState(null);
+    const [matched, setMatched] = React.useState(null);
+    const [percent, setPercent] = React.useState(null);
+
+
     const handleToggleEdit = (key) => {
         setEditableFields(prev => {
             const newEditableFields = { ...prev };
@@ -31,7 +36,11 @@ const SettingsForm = ({ settingsData, handleSettingsChange, scopeGroupMenu, temp
     const setLocalScanStatus = (res) => {
         if (typeof res.data.info === 'string') {
             setScanStatus(res.data.info);
-            setIsRunning(false);
+            if (res.data.info === "scan in queue") {
+                setIsRunning(true);
+            } else {
+                setIsRunning(false);
+            }
         } else {
             let statusString = '';
             if (res.data.info?.status) {
@@ -42,9 +51,21 @@ const SettingsForm = ({ settingsData, handleSettingsChange, scopeGroupMenu, temp
             }
             if (res.data.info?.status != "Finished") {
                 if (res.data.info?.extendedStatistics?.percent) {
-                    statusString = statusString + ` Процент выполнения: ${res.data.info?.extendedStatistics?.percent}%`;
+                    setPercent(res.data.info?.extendedStatistics?.percent);
                 } else {
-                    statusString = statusString + ` проводится OSINT`;
+                    setPercent(null);
+                    statusString = statusString + `
+                    проводится OSINT`;
+                }
+                if (res.data.info?.extendedStatistics?.duration) {
+                    setDuration(`Duration: ${res.data.info?.extendedStatistics?.duration}`);
+                } else {
+                    setDuration(null);
+                }
+                if (res.data.info?.extendedStatistics?.matched) {
+                    setMatched(`Matched: ${res.data.info?.extendedStatistics?.matched}`);
+                } else {
+                    setMatched(null);
                 }
             }
             setScanStatus(statusString);
@@ -83,13 +104,32 @@ const SettingsForm = ({ settingsData, handleSettingsChange, scopeGroupMenu, temp
 
     const startScan = (name) => {
         axios.post(`${BASE_URL}/scan/start/${name}/`, {}, {
-              headers: {
-                  'Authorization': `Token ${API_TOKEN}`,
-                  'Accept': 'application/json',
-                  'Content-Type': 'application/json'
-              }
-        }).then(() => getScanStatus()).catch(e => console.error('Ошибка запуска скана', e)) 
+            headers: {
+                'Authorization': `Token ${API_TOKEN}`,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(() => {
+            setTimeout(() => {
+                getScanStatus(); 
+            }, 1000); 
+        })
+        .catch(e => console.error('Ошибка запуска скана', e));
     };
+    
+
+    React.useEffect(() => {
+        let intervalId;
+    
+        if (isRunning) {
+          intervalId = setInterval(() => {
+            getScanStatus();
+          }, 2000);
+        }
+
+        return () => clearInterval(intervalId);
+      }, [isRunning]);
 
     return (
         <Form layout="vertical">
@@ -98,6 +138,14 @@ const SettingsForm = ({ settingsData, handleSettingsChange, scopeGroupMenu, temp
                 <div><p>Остановить скан</p><Button size="medium" disabled={!isRunning} icon={<PauseCircleOutlined />} rounded={true} onClick={(e) => {e.stopPropagation(); stopScan(settingsData.scan)}}></Button></div>
                 </div>}
             {showStatus && <Title level={5}>Статус скана: {scanStatus || 'Не известен'}</Title>}
+            {showStatus && percent && <Title level={5}>
+                                            {"Прогресс загрузки: "}
+                                            <div className={css.progressBar}>
+                                                <div style={{ width: `${percent}%`}}></div>
+                                            </div>
+                                            {` ${percent}%`}
+                                        </Title>}
+            {showStatus && (duration || matched) && <Title level={5}>{duration && duration}  {matched && matched}</Title>}
             <Title level={3}>Основные настройки</Title>
             <FormItem className={css.formItem} label="Scan Name">
                 <Space>
